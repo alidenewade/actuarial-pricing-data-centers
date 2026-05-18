@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dcrisk"
+version = "0.1.0"
+description = "Coupled power-thermal-cyber simulation and actuarial pricing for hyperscale data centers."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Ali Denewade", email = "aliactsc@gmail.com" }]
+keywords = [
+  "actuarial", "insurance", "data-center", "monte-carlo",
+  "copula", "markov-chain", "sde", "generalised-pareto",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "pandas>=2.1",
+  "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+sim    = ["numba>=0.59", "tqdm>=4.66"]
+stats  = ["statsmodels>=0.14", "pyextremes>=2.7"]
+ui     = ["streamlit>=1.30", "plotly>=5.18"]
+dev    = ["pytest>=8.0", "pytest-cov>=4.1", "hypothesis>=6.92", "black", "isort", "ruff", "mypy"]
+nb     = ["jupyterlab>=4.0", "ipykernel", "ipywidgets", "papermill"]
+all    = ["dcrisk[sim,stats,ui,dev,nb]"]
+
+[project.urls]
+Homepage = "https://github.com/alidenewade/dcrisk"
+Paper    = "file://./paper/dc_paper.pdf"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dcrisk"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/dcrisk", "paper/*.tex", "notebooks", "tests", "README.md", "LICENSE"]
+
+# ---------------------------------------------------------------------------
+# Tooling configuration
+# ---------------------------------------------------------------------------
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["dcrisk"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "NPY", "RUF"]
+ignore = ["E501"]  # black handles line length
+
+[tool.mypy]
+python_version = "3.12"
+strict_optional = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]

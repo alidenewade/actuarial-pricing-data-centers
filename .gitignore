@@ -1,0 +1,63 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.hypothesis/
+.ipynb_checkpoints/
+
+# --- Virtual envs (we use conda, but in case) ---
+.venv/
+venv/
+env/
+
+# --- Jupyter ---
+.jupyter/
+profile_default/
+
+# --- LaTeX build artefacts (paper/build/ is the canonical output dir) ---
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+*.run.xml
+*.bcf
+# Keep the build dir tracked structurally but not its contents:
+paper/build/*
+!paper/build/.gitkeep
+
+# --- Editor / OS ---
+.vscode/*.log
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# --- Local secrets / scratch ---
+.env
+.env.local
+scratch/
+tmp/
+
+# --- Setup log (keep tracked? user choice — track for reproducibility) ---
+# setup.log is tracked; do NOT ignore.
