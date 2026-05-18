@@ -8,59 +8,72 @@
             "group": { "kind": "build", "isDefault": true },
             "problemMatcher": ["$tex-chktex"],
             "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": false,
-                "clear": true
+                "echo": true, "reveal": "always", "focus": false,
+                "panel": "dedicated", "showReuseMessage": false, "clear": true
             }
         },
         {
-            "label": "Run all notebooks",
+            "label": "Run all notebooks (CPU + GPU)",
             "type": "shell",
-            "command": "conda run -n dcrisk --no-capture-output bash -c 'make sim'",
+            "command": "conda run -n dcrisk-gpu --no-capture-output bash -c 'make sim'",
             "group": "build",
             "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": true
-            }
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
         },
         {
-            "label": "Launch dashboard",
+            "label": "Run GPU notebooks only (04b, 08)",
             "type": "shell",
-            "command": "conda run -n dcrisk --no-capture-output streamlit run src/dcrisk/dashboards/streamlit_app.py",
+            "command": "conda run -n dcrisk-gpu --no-capture-output bash -c 'make sim-gpu'",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "Launch Streamlit dashboard (Tailscale)",
+            "type": "shell",
+            "command": "conda run -n dcrisk-gpu --no-capture-output bash -c 'make app'",
             "isBackground": true,
             "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
+            "presentation": { "reveal": "always", "panel": "new" }
         },
         {
-            "label": "Run tests",
+            "label": "Print dashboard URL",
             "type": "shell",
-            "command": "conda run -n dcrisk --no-capture-output python -m pytest -q",
+            "command": "make app-tunnel",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "shared", "clear": false }
+        },
+        {
+            "label": "Run tests (CPU)",
+            "type": "shell",
+            "command": "conda run -n dcrisk-gpu --no-capture-output python -m pytest -q --ignore=tests/test_gpu_smoke.py",
             "group": { "kind": "test", "isDefault": true },
             "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": true
-            }
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "Run GPU tests (RTX 5090 smoke)",
+            "type": "shell",
+            "command": "conda run -n dcrisk-gpu --no-capture-output python -m pytest tests/test_gpu_smoke.py -v",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "Benchmark (CPU vs GPU SDE)",
+            "type": "shell",
+            "command": "conda run -n dcrisk-gpu --no-capture-output bash -c 'make bench'",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
         },
         {
             "label": "Lint (ruff + mypy)",
             "type": "shell",
-            "command": "conda run -n dcrisk --no-capture-output bash -c 'ruff check src tests && mypy src'",
+            "command": "conda run -n dcrisk-gpu --no-capture-output bash -c 'ruff check src tests && mypy src'",
             "group": "test",
             "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated"
-            }
+            "presentation": { "reveal": "always", "panel": "dedicated" }
         }
     ]
 }

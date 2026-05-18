@@ -2,20 +2,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Streamlit dashboard",
+            "name": "Python: Streamlit dashboard (Tailscale)",
             "type": "debugpy",
             "request": "launch",
             "module": "streamlit",
             "args": [
                 "run",
                 "${workspaceFolder}/src/dcrisk/dashboards/streamlit_app.py",
-                "--server.headless=true"
+                "--server.headless=true",
+                "--server.address=100.127.236.32",
+                "--server.port=8501"
             ],
-            "python": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
+                "PYTHONPATH": "${workspaceFolder}/src",
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "CUDA_VISIBLE_DEVICES": "0"
             }
         },
         {
@@ -24,39 +28,59 @@
             "request": "launch",
             "module": "pytest",
             "args": ["${file}", "-q", "-s"],
-            "python": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "Python: pytest (all tests)",
+            "name": "Python: pytest (all CPU tests)",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
-            "args": ["tests", "-q", "-s"],
-            "python": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+            "args": ["tests", "-q", "-s", "--ignore=tests/test_gpu_smoke.py"],
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "Python: pytest (current test under cursor)",
+            "name": "Python: pytest GPU smoke (RTX 5090)",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
-            "args": ["${file}::${selectedText}", "-q", "-s"],
-            "python": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+            "args": ["tests/test_gpu_smoke.py", "-v", "-s"],
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "CUDA_VISIBLE_DEVICES": "0"
+            }
         },
         {
-            "name": "Python: current file",
+            "name": "Python: JAX/CUDA script (current file, NaN-debug)",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "python": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "JAX_DEBUG_NANS": "1",
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "CUDA_VISIBLE_DEVICES": "0",
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        },
+        {
+            "name": "Python: current file (no special env)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "python": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}"

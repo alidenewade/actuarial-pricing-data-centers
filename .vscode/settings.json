@@ -1,14 +1,23 @@
 {
     // ------------------------------------------------------------------
-    // Python interpreter
+    // Python interpreter (adu-00 / dcrisk-gpu env)
     // ------------------------------------------------------------------
-    "python.defaultInterpreterPath": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+    "python.defaultInterpreterPath": "/home/adu-00/conda-envs/dcrisk-gpu/bin/python",
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.extraPaths": ["${workspaceFolder}/src"],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
     "python.testing.pytestArgs": ["tests"],
+
+    // ------------------------------------------------------------------
+    // Integrated-terminal env: keep JAX from grabbing all 32 GB on import,
+    // and pin CUDA visibility to device 0 (the only GPU on this box).
+    // ------------------------------------------------------------------
+    "terminal.integrated.env.linux": {
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+        "CUDA_VISIBLE_DEVICES": "0"
+    },
 
     // ------------------------------------------------------------------
     // Format on save: Black + isort + Ruff
@@ -26,10 +35,12 @@
     "ruff.lint.args": ["--config", "${workspaceFolder}/pyproject.toml"],
 
     // ------------------------------------------------------------------
-    // Jupyter
+    // Jupyter — point at the dcrisk-gpu kernelspec under ~/.local/share
+    // (NOT the Snap-sandbox path that 'ipykernel install --user' lands
+    // in by default on this box; see setup.log Step 3f.)
     // ------------------------------------------------------------------
     "jupyter.kernels.filter": [
-        { "path": "/home/ali/miniconda3/envs/dcrisk/share/jupyter/kernels/dcrisk", "type": "jupyterKernel" }
+        { "path": "/home/adu-00/.local/share/jupyter/kernels/dcrisk-gpu", "type": "jupyterKernel" }
     ],
     "notebook.defaultFormatter": "ms-python.black-formatter",
     "notebook.formatOnSave.enabled": true,
@@ -42,13 +53,7 @@
         {
             "name": "latexmk",
             "command": "latexmk",
-            "args": [
-                "-pdf",
-                "-interaction=nonstopmode",
-                "-shell-escape",
-                "-outdir=build",
-                "%DOC%"
-            ],
+            "args": ["-pdf", "-interaction=nonstopmode", "-shell-escape", "-outdir=build", "%DOC%"],
             "env": {}
         },
         {
@@ -59,10 +64,7 @@
         }
     ],
     "latex-workshop.latex.recipes": [
-        {
-            "name": "latexmk (default)",
-            "tools": ["latexmk"]
-        }
+        { "name": "latexmk (default)", "tools": ["latexmk"] }
     ],
     "latex-workshop.latex.rootFile.useSubFile": false,
     "latex-workshop.latex.rootFile.doNotPrompt": true,
@@ -97,6 +99,7 @@
     // ------------------------------------------------------------------
     "cSpell.words": [
         "actuarial",
+        "adu",
         "alidenewade",
         "Arrhenius",
         "ASHRAE",
@@ -106,15 +109,20 @@
         "copulas",
         "Cox",
         "Cramer",
+        "CuPy",
+        "cupy",
         "dcrisk",
         "Denewade",
         "Deg",
         "diffrax",
+        "equinox",
         "Esscher",
         "Gumbel",
         "hyperscale",
         "ipykernel",
+        "JAX",
         "jaxlib",
+        "jaxtyping",
         "Kolmogorov",
         "kpsewhich",
         "latexmk",
@@ -124,6 +132,7 @@
         "Markov",
         "MERIDIAN",
         "miniconda",
+        "optax",
         "papermill",
         "pgfplots",
         "Pigouvian",
@@ -131,6 +140,8 @@
         "siunitx",
         "Solvency",
         "stochastic",
+        "tailnet",
+        "tailscale",
         "tcolorbox",
         "texlive",
         "tikz",
@@ -141,22 +152,20 @@
         "Wits"
     ],
     "cSpell.languageSettings": [
-        {
-            "languageId": "latex",
-            "allowCompoundWords": true
-        }
+        { "languageId": "latex", "allowCompoundWords": true }
     ],
 
     // ------------------------------------------------------------------
     // File explorer hygiene — hide build artefacts from the tree
     // ------------------------------------------------------------------
     "files.exclude": {
-        "**/__pycache__":      true,
-        "**/.pytest_cache":    true,
-        "**/.mypy_cache":      true,
-        "**/.ruff_cache":      true,
+        "**/__pycache__":        true,
+        "**/.pytest_cache":      true,
+        "**/.mypy_cache":        true,
+        "**/.ruff_cache":        true,
         "**/.ipynb_checkpoints": true,
-        "**/*.egg-info":       true
+        "**/*.egg-info":         true,
+        "**/.jax_cache":         true
     },
     "search.exclude": {
         "paper/build/**": true,

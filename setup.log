@@ -9479,3 +9479,58 @@ Editable install of dcrisk:
 
 Step 3 status: COMPLETE.
 ====================================================================
+
+====================================================================
+=== Step 4 record — adu-00 VS Code config ===
+====================================================================
+Date: 2026-05-18
+
+VS Code mode: LOCAL snap install (/snap/bin/code), used `code --install-extension`.
+
+settings.json rewritten with adu-00 paths:
+  python.defaultInterpreterPath -> /home/adu-00/conda-envs/dcrisk-gpu/bin/python
+  jupyter.kernels.filter        -> /home/adu-00/.local/share/jupyter/kernels/dcrisk-gpu
+  terminal.integrated.env.linux -> XLA_PYTHON_CLIENT_PREALLOCATE=false,
+                                   CUDA_VISIBLE_DEVICES=0
+  cSpell.words                  -> +adu, +CuPy/cupy, +JAX, +equinox, +jaxtyping,
+                                   +optax, +tailnet, +tailscale (in addition to
+                                   the laptop dictionary)
+
+tasks.json rewritten with conda env name dcrisk-gpu, plus new entries:
+  - Run GPU notebooks only (04b, 08)
+  - Print dashboard URL  (make app-tunnel)
+  - Run GPU tests (RTX 5090 smoke)
+  - Benchmark (CPU vs GPU SDE)
+Removed the laptop's "conda run -n dcrisk" prefixes (env renamed for GPU host).
+
+launch.json rewritten with adu-00 python path and:
+  - Streamlit dashboard now binds to --server.address=100.127.236.32
+    (Tailscale IPv4 of this node), --server.port=8501.
+  - Python: pytest GPU smoke launch config with CUDA_VISIBLE_DEVICES=0
+    and XLA_PYTHON_CLIENT_PREALLOCATE=false in the env.
+  - Python: JAX/CUDA NaN-debug launch config sets JAX_DEBUG_NANS=1.
+
+Extensions installed (delta vs the pre-existing 10):
+  + James-Yu.latex-workshop 10.15.2
+  + ltex-plus.vscode-ltex-plus 15.6.1   (replaces the deprecated
+                                          valentjn.vscode-ltex named in the
+                                          brief; same `ltex.*` config keys, so
+                                          the existing settings work unchanged)
+  + ms-python.python 2026.4.0 (+ debugpy 2026.6.0 + pylance 2026.2.1)
+  + ms-python.black-formatter 2026.4.0
+  + ms-python.isort 2026.4.0
+  + charliermarsh.ruff 2026.42.0
+  + ms-toolsai.jupyter 2025.9.1 (+ jupyter-renderers, cell-tags, slideshow,
+                                  keymap as dependencies)
+  + yzhang.markdown-all-in-one 3.6.3
+  + shd101wyy.markdown-preview-enhanced 0.8.26
+  + tamasfe.even-better-toml 0.21.2
+  + redhat.vscode-yaml 1.23.0
+  + eamodio.gitlens 17.12.2
+  + mhutchie.git-graph 1.30.0
+  + streetsidesoftware.code-spell-checker 4.5.6
+  + NVIDIA.nsight-vscode-edition 2025.1.36067579 (+ ms-vscode.cpptools)
+Final extension count: 33.
+
+Step 4 status: COMPLETE. Pausing for Ali's OK before Step 5.
+====================================================================
