@@ -1,0 +1,595 @@
+=== Preflight inventory started: 2026-05-18T06:12:31+02:00 ===
+=== Host: fas-datart-2026 ===
+=== Kernel: 6.17.0-29-generic ===
+
+====================================================================
+Section 1: System & build tooling
+====================================================================
+  [✓] gcc          /usr/bin/gcc -> gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+  [✓] g++          /usr/bin/g++ -> g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+  [✓] gfortran     /usr/bin/gfortran -> GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+  [✓] make         /usr/bin/make -> GNU Make 4.3
+  [✓] cmake        /usr/bin/cmake -> cmake version 3.28.3
+  [✓] pkg-config   /usr/bin/pkg-config -> 1.8.1
+  [✓] git          /usr/bin/git -> git version 2.43.0
+  [✓] curl         /usr/bin/curl -> curl 8.5.0 (x86_64-pc-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.10
+  [✓] wget         /usr/bin/wget -> GNU Wget 1.21.4 built on linux-gnu.
+  [✓] unzip        /usr/bin/unzip -> 
+  [✓] jq           /usr/bin/jq -> jq-1.7
+  [✓] rg           /usr/bin/rg -> ripgrep 14.1.0
+  [✗] fd           MISSING
+  [✗] fdfind       MISSING
+
+Git config:
+  user.name  = Ali Denewade
+  user.email = aliactsc@gmail.com
+  init.defaultBranch = (unset)
+
+====================================================================
+Section 2: Python / conda
+====================================================================
+python3:  /usr/bin/python3 -> Python 3.12.3
+pip:      /usr/bin/pip
+conda:    /home/ali/miniconda3/bin/conda
+mamba:    MISSING
+
+conda --version: conda 26.1.1
+
+conda env list:
+  
+  # conda environments:
+  #
+  # * -> active
+  # + -> frozen
+  base                 *   /home/ali/miniconda3
+  adu                      /home/ali/miniconda3/envs/adu
+  adu-tutor                /home/ali/miniconda3/envs/adu-tutor
+  carla                    /home/ali/miniconda3/envs/carla
+  electrical               /home/ali/miniconda3/envs/electrical
+  openvsp                  /home/ali/miniconda3/envs/openvsp
+  p4v8                     /home/ali/miniconda3/envs/p4v8
+  ros2                     /home/ali/miniconda3/envs/ros2
+  sam                      /home/ali/miniconda3/envs/sam
+  wits-sports              /home/ali/miniconda3/envs/wits-sports
+  
+
+Base env package count: 157
+Sample of base env (first 25):
+  _libgcc_mutex               0.1              main
+  _openmp_mutex               5.1              1_gnu
+  ajsonrpc                    1.2.0            pypi_0              pypi
+  anaconda-anon-usage         0.7.5            pyhb46e38b_100
+  anaconda-auth               0.13.0           py313h06a4308_0
+  anaconda-cli-base           0.8.1            py313h06a4308_0
+  annotated-types             0.6.0            py313h06a4308_1
+  anyio                       4.10.0           py313h06a4308_0
+  archspec                    0.2.5            pyhd3eb1b0_0
+  boltons                     25.0.0           py313h06a4308_0
+  bottle                      0.13.4           pypi_0              pypi
+  brotlicffi                  1.2.0.0          py313h7354ed3_0
+  bzip2                       1.0.8            h5eee18b_6
+  c-ares                      1.34.6           hd44998d_0
+  ca-certificates             2025.12.2        h06a4308_0
+  certifi                     2026.01.04       py313h06a4308_0
+  cffi                        2.0.0            py313h4eded50_1
+  charset-normalizer          3.4.4            py313h06a4308_0
+  click                       8.2.1            py313h06a4308_1
+  colorama                    0.4.6            pypi_0              pypi
+  conda                       26.1.1           py313h06a4308_0
+  conda-anaconda-telemetry    0.3.0            pyhd3eb1b0_1
+  conda-anaconda-tos          0.2.2            py313h06a4308_1
+  conda-content-trust         0.2.0            py313h06a4308_1
+  conda-libmamba-solver       25.11.0          pyhdf14ebd_0
+
+Already has dcrisk env? no
+
+====================================================================
+Section 3: LaTeX toolchain
+====================================================================
+  [✓] pdflatex       pdfTeX 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian)
+  [✗] latexmk        MISSING
+  [✓] lualatex       This is LuaHBTeX, Version 1.17.0 (TeX Live 2023/Debian)
+  [✗] xelatex        MISSING
+  [✓] bibtex         BibTeX 0.99d (TeX Live 2023/Debian)
+  [✗] biber          MISSING
+  [✓] kpsewhich      kpathsea version 6.3.5
+  [✗] latexindent    MISSING
+
+texlive dpkg packages installed:
+  texlive                                            2023.20240207-1
+  texlive-base                                       2023.20240207-1
+  texlive-binaries                                   2023.20230311.66589-9build3
+  texlive-fonts-recommended                          2023.20240207-1
+  texlive-latex-base                                 2023.20240207-1
+  texlive-latex-recommended                          2023.20240207-1
+
+Required LaTeX packages (kpsewhich):
+  [✗] circuitikz.sty       MISSING
+  [✗] pgfplots.sty         MISSING
+  [✗] tcolorbox.sty        MISSING
+  [✗] titlesec.sty         MISSING
+  [✓] fancyhdr.sty         /usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+  [✓] mathpazo.sty         /usr/share/texlive/texmf-dist/tex/latex/psnfss/mathpazo.sty
+  [✗] tocloft.sty          MISSING
+  [✓] amsmath.sty          /usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+  [✓] amssymb.sty          /usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+  [✓] hyperref.sty         /usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+  [✓] graphicx.sty         /usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+  [✓] geometry.sty         /usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+  [✓] booktabs.sty         /usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+  [✗] siunitx.sty          MISSING
+
+====================================================================
+Section 4: Node / npm
+====================================================================
+  [✓] node     /usr/bin/node -> v22.22.2
+  [✓] npm      /usr/bin/npm -> 10.9.7
+  [✓] npx      /usr/bin/npx -> 10.9.7
+  [✗] pnpm     MISSING
+  [✗] yarn     MISSING
+  ~/.npm-global exists
+  ~/.cargo/bin exists -> cargo cargo-clippy cargo-fmt cargo-miri clippy-driver rls rust-analyzer rustc rustdoc rustfmt rust-gdb rust-gdbgui rust-lldb rustup 
+
+====================================================================
+Section 5: VS Code
+====================================================================
+  [✓] code -> /snap/bin/code (1.119.0)
+
+Installed VS Code extensions:
+  - anthropic.claude-code
+  - continue.continue
+  - intelligentactuaries.intelligent-actuaries
+  - ms-azuretools.vscode-containers
+  - ms-python.debugpy
+  - ms-python.python
+  - ms-python.vscode-pylance
+  - ms-python.vscode-python-envs
+  - ms-vscode-remote.remote-containers
+  - openai.chatgpt
+  - rjmacarthy.twinny
+  - sst-dev.opencode
+  - tomoki1207.pdf
+
+====================================================================
+Section 6: Existing project state
+====================================================================
+Directory: /home/ali/Projects/Actuarial_pricing_and_insurance_for_data_centers
+
+ls -lah (top level):
+  total 552K
+  drwxrwxr-x  2 ali ali 4.0K May 18 06:12 .
+  drwxrwxr-x 21 ali ali 4.0K May 18 06:01 ..
+  -rw-------  1 ali ali  19K May 18 03:59 appendix.tex
+  -rw-------  1 ali ali 403K May 18 03:59 dc_paper.pdf
+  -rw-------  1 ali ali  73K May 18 03:59 dc_paper.tex
+  -rw-------  1 ali ali  34K May 18 03:59 econ_section.tex
+  -rw-rw-r--  1 ali ali 7.3K May 18 06:13 setup.log
+
+Is git repo? NO
+
+Paper file sizes:
+  dc_paper.tex              74689 bytes  (1753 lines)
+  appendix.tex              19380 bytes  (443 lines)
+  econ_section.tex          34075 bytes  (754 lines)
+  dc_paper.pdf             412365 bytes  (2477 lines)
+
+Orphan / build artefacts at root:
+  ./setup.log
+
+====================================================================
+Section 7: Test compile of existing paper
+====================================================================
+latexmk is MISSING — falling back to pdflatex (read-only test, building in /tmp to keep working dir clean)
+
+--- pass 1 (pdflatex, errorstop suppressed) ---
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(./dc_paper.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/mathtools/mathtools.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/mathtools/mhsetup.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/tools/bm.sty)
+
+! LaTeX Error: File `siunitx.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.18 \sisetup
+             {detect-all,group-separator={,},per-mode=symbol}^^M
+!  ==> Fatal error occurred, no output PDF file produced!
+Transcript written on dc_paper.log.
+
+--- exit code from pass 1: 0 ---
+
+NO PDF produced. Check log:
+\symboldoperators=\mathgroup6
+\symboldletters=\mathgroup7
+\symboldsymbols=\mathgroup8
+Package bm Info: No bold for \OMX/cmex/m/n, using \pmb.
+Package bm Info: No bold for \U/msa/m/n, using \pmb.
+Package bm Info: No bold for \U/msb/m/n, using \pmb.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
+)
+
+! LaTeX Error: File `siunitx.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.18 \sisetup
+             {detect-all,group-separator={,},per-mode=symbol}^^M 
+Here is how much of TeX's memory you used:
+ 2261 strings out of 476182
+ 31591 string characters out of 5795595
+ 1922975 words of memory out of 5000000
+ 24308 multiletter control sequences out of 15000+600000
+ 558369 words of font info for 37 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 56i,0n,65p,224b,36s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+!  ==> Fatal error occurred, no output PDF file produced!
+
+====================================================================
+Section 8: Scan paper preamble for ALL \usepackage requirements
+====================================================================
+Packages used by dc_paper.tex (and \input children) — checking each with kpsewhich:
+
+  [✗] algorithm              MISSING
+  [✗] algpseudocode          MISSING
+  [✓] amsmath               
+  [✓] amssymb               
+  [✓] amsthm                
+  [✓] array                 
+  [✓] bm                    
+  [✓] booktabs              
+  [✗] circuitikz             MISSING
+  [✗] citecolor=iaaccent     MISSING
+  [✗] color=iadark}          MISSING
+  [✗] courier              % monospace MISSING
+  [✗] enumitem               MISSING
+  [✓] fancyhdr              
+  [✓] fontenc               
+  [✓] geometry              
+  [✗] helvet  % sans family  MISSING
+  [✗] labelfont={bf          MISSING
+  [✗] linkcolor=iaaccent     MISSING
+  [✓] mathpazo              
+  [✓] mathtools             
+  [✗] microtype            % subtle horizontal balance MISSING
+  [✗] multirow               MISSING
+  [✓] natbib                
+  [✗] pgfplots               MISSING
+  [✗] sf}                    MISSING
+  [✗] siunitx                MISSING
+  [✗] slightly scaled        MISSING
+  [✓] tabularx              
+  [✗] tcolorbox              MISSING
+  [✗] tikz                   MISSING
+  [✗] titlesec               MISSING
+  [✗] tocloft                MISSING
+  [✗] usepackage[colorlinks=true MISSING
+  [✗] usepackage[font={small MISSING
+  [✓] xcolor                
+
+Also scanning for \usetikzlibrary lines (TikZ libraries):
+  - 
+  - calc
+  - fit
+  - positioning
+  - shapes.geometric
+  - \usetikzlibrary{arrows.meta
+
+--- Clean re-scan: extract package names only (handles multi-line + bracket options) ---
+  [✗] algorithm          MISSING
+  [✗] algpseudocode      MISSING
+  [✓] amsmath           
+  [✓] amssymb           
+  [✓] amsthm            
+  [✓] array             
+  [✓] bm                
+  [✓] booktabs          
+  [✓] caption           
+  [✗] circuitikz         MISSING
+  [✓] courier           
+  [✗] enumitem           MISSING
+  [✓] fancyhdr          
+  [✓] fontenc           
+  [✓] geometry          
+  [✓] helvet            
+  [✓] hyperref          
+  [✓] mathpazo          
+  [✓] mathtools         
+  [✓] microtype         
+  [✗] multirow           MISSING
+  [✓] natbib            
+  [✗] pgfplots           MISSING
+  [✗] siunitx            MISSING
+  [✓] tabularx          
+  [✗] tcolorbox          MISSING
+  [✗] tikz               MISSING
+  [✗] titlesec           MISSING
+  [✗] tocloft            MISSING
+  [✓] xcolor            
+
+Also need (for hyperref/colors used inline): hyperref, caption
+  [✓] hyperref          
+  [✓] caption           
+
+====================================================================
+Step 2 — scaffold project: 2026-05-18T06:19:23+02:00
+====================================================================
+Directories created:
+  .
+  ./notebooks
+  ./paper
+  ./paper/build
+  ./paper/reference
+  ./src
+  ./src/dcrisk
+  ./src/dcrisk/copula
+  ./src/dcrisk/dashboards
+  ./src/dcrisk/econ
+  ./src/dcrisk/frequency
+  ./src/dcrisk/pricing
+  ./src/dcrisk/reliability
+  ./src/dcrisk/sde
+  ./src/dcrisk/severity
+  ./tests
+  ./.vscode
+
+2b — move paper files (preserve bytes):
+  pre:  e2e6e57473fed073e86cb3f074e72ca77b0faf6b3d8d412675f7ba3e1e177ccb  dc_paper.tex
+  pre:  9dad677bbb424d6934bc48cf0fb144a00ec94797069f2fcc71e3e979d95f8c7e  appendix.tex
+  pre:  c24b6988e0098899c9d91c30a873de922cd1a9d8938c7ace40c68e1519e79d80  econ_section.tex
+  pre:  20676bf9afc8f3ea3a2e9884088207bf36438740c936b3a86d317bca15c070d4  dc_paper.pdf
+
+Post-move SHA256 check:
+  post: e2e6e57473fed073e86cb3f074e72ca77b0faf6b3d8d412675f7ba3e1e177ccb  dc_paper.tex
+  post: 9dad677bbb424d6934bc48cf0fb144a00ec94797069f2fcc71e3e979d95f8c7e  appendix.tex
+  post: c24b6988e0098899c9d91c30a873de922cd1a9d8938c7ace40c68e1519e79d80  econ_section.tex
+  post: 20676bf9afc8f3ea3a2e9884088207bf36438740c936b3a86d317bca15c070d4  dc_paper_original.pdf
+
+2c — chmod 0644 on paper files:
+  -rw-r--r-- 1 ali ali  19380 May 18 03:59 paper/appendix.tex
+  -rw-r--r-- 1 ali ali  74689 May 18 03:59 paper/dc_paper.tex
+  -rw-r--r-- 1 ali ali  34075 May 18 03:59 paper/econ_section.tex
+  -rw-r--r-- 1 ali ali 412365 May 18 03:59 paper/reference/dc_paper_original.pdf
+
+====================================================================
+Step 2 verification: final tree + JSON validity of notebooks
+====================================================================
+Tree:
+  ./.gitignore
+  ./LICENSE
+  ./Makefile
+  ./notebooks/01_compound_nb_gpd.ipynb
+  ./notebooks/02_markov_chain_reliability.ipynb
+  ./notebooks/03_copula_dependence.ipynb
+  ./notebooks/04_sde_simulation.ipynb
+  ./notebooks/05_worked_example_200MW.ipynb
+  ./notebooks/06_supply_demand_equilibrium.ipynb
+  ./paper/appendix.tex
+  ./paper/build/.gitkeep
+  ./paper/dc_paper.tex
+  ./paper/econ_section.tex
+  ./paper/reference/dc_paper_original.pdf
+  ./paper/reference/README.md
+  ./pyproject.toml
+  ./README.md
+  ./src/dcrisk/copula/gaussian.py
+  ./src/dcrisk/copula/gumbel.py
+  ./src/dcrisk/copula/__init__.py
+  ./src/dcrisk/dashboards/__init__.py
+  ./src/dcrisk/dashboards/streamlit_app.py
+  ./src/dcrisk/econ/incidence.py
+  ./src/dcrisk/econ/__init__.py
+  ./src/dcrisk/econ/market.py
+  ./src/dcrisk/econ/operator.py
+  ./src/dcrisk/frequency/__init__.py
+  ./src/dcrisk/frequency/nb_gamma.py
+  ./src/dcrisk/__init__.py
+  ./src/dcrisk/pricing/__init__.py
+  ./src/dcrisk/pricing/loadings.py
+  ./src/dcrisk/pricing/pure.py
+  ./src/dcrisk/pricing/xol.py
+  ./src/dcrisk/reliability/arrhenius.py
+  ./src/dcrisk/reliability/fault_tree.py
+  ./src/dcrisk/reliability/__init__.py
+  ./src/dcrisk/reliability/markov.py
+  ./src/dcrisk/sde/__init__.py
+  ./src/dcrisk/sde/ptcyber.py
+  ./src/dcrisk/severity/gpd.py
+  ./src/dcrisk/severity/__init__.py
+  ./src/dcrisk/severity/lognormal.py
+  ./src/dcrisk/severity/mixture.py
+  ./tests/__init__.py
+  ./tests/test_smoke.py
+
+Notebook JSON validity:
+  [✓] notebooks/01_compound_nb_gpd.ipynb
+  [✓] notebooks/02_markov_chain_reliability.ipynb
+  [✓] notebooks/03_copula_dependence.ipynb
+  [✓] notebooks/04_sde_simulation.ipynb
+  [✓] notebooks/05_worked_example_200MW.ipynb
+  [✓] notebooks/06_supply_demand_equilibrium.ipynb
+
+Python syntax check on all src/dcrisk/**/*.py:
+  Syntax OK: 28 files; failed: 0
+
+====================================================================
+Step 2 git init + initial commit
+====================================================================
+  Initialized empty Git repository in /home/ali/Projects/Actuarial_pricing_and_insurance_for_data_centers/.git/
+
+Active git identity:
+  user.name  = Ali Denewade
+  user.email = aliactsc@gmail.com
+
+Files staged:
+  A  .gitignore
+  A  LICENSE
+  A  Makefile
+  A  README.md
+  A  notebooks/01_compound_nb_gpd.ipynb
+  A  notebooks/02_markov_chain_reliability.ipynb
+  A  notebooks/03_copula_dependence.ipynb
+  A  notebooks/04_sde_simulation.ipynb
+  A  notebooks/05_worked_example_200MW.ipynb
+  A  notebooks/06_supply_demand_equilibrium.ipynb
+  A  paper/appendix.tex
+  A  paper/dc_paper.tex
+  A  paper/econ_section.tex
+  A  paper/reference/README.md
+  A  paper/reference/dc_paper_original.pdf
+  A  pyproject.toml
+  A  src/dcrisk/__init__.py
+  A  src/dcrisk/copula/__init__.py
+  A  src/dcrisk/copula/gaussian.py
+  A  src/dcrisk/copula/gumbel.py
+  A  src/dcrisk/dashboards/__init__.py
+  A  src/dcrisk/dashboards/streamlit_app.py
+  A  src/dcrisk/econ/__init__.py
+  A  src/dcrisk/econ/incidence.py
+  A  src/dcrisk/econ/market.py
+  A  src/dcrisk/econ/operator.py
+  A  src/dcrisk/frequency/__init__.py
+  A  src/dcrisk/frequency/nb_gamma.py
+  A  src/dcrisk/pricing/__init__.py
+  A  src/dcrisk/pricing/loadings.py
+  A  src/dcrisk/pricing/pure.py
+  A  src/dcrisk/pricing/xol.py
+  A  src/dcrisk/reliability/__init__.py
+  A  src/dcrisk/reliability/arrhenius.py
+  A  src/dcrisk/reliability/fault_tree.py
+  A  src/dcrisk/reliability/markov.py
+  A  src/dcrisk/sde/__init__.py
+  A  src/dcrisk/sde/ptcyber.py
+  A  src/dcrisk/severity/__init__.py
+  A  src/dcrisk/severity/gpd.py
+  A  src/dcrisk/severity/lognormal.py
+  A  src/dcrisk/severity/mixture.py
+  A  tests/__init__.py
+  A  tests/test_smoke.py
+  Checking why paper/build/.gitkeep was not staged:
+    .gitignore:7:build/	paper/build/.gitkeep
+
+  Force-added .gitkeep. Re-verifying staged set:
+    A  paper/build/.gitkeep
+
+The following paths are ignored by one of your .gitignore files:
+setup.log
+hint: Use -f if you really want to add them.
+hint: Turn this message off by running
+hint: "git config advice.addIgnoredFile false"
+
+Final staged file count: 45
+
+Creating commit...
+[main (root-commit) d4aec05] chore: scaffold dcrisk project from working paper
+ 45 files changed, 5437 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 LICENSE
+ create mode 100644 Makefile
+ create mode 100644 README.md
+ create mode 100644 notebooks/01_compound_nb_gpd.ipynb
+ create mode 100644 notebooks/02_markov_chain_reliability.ipynb
+ create mode 100644 notebooks/03_copula_dependence.ipynb
+ create mode 100644 notebooks/04_sde_simulation.ipynb
+ create mode 100644 notebooks/05_worked_example_200MW.ipynb
+ create mode 100644 notebooks/06_supply_demand_equilibrium.ipynb
+ create mode 100644 paper/appendix.tex
+ create mode 100644 paper/build/.gitkeep
+ create mode 100644 paper/dc_paper.tex
+ create mode 100644 paper/econ_section.tex
+ create mode 100644 paper/reference/README.md
+ create mode 100644 paper/reference/dc_paper_original.pdf
+ create mode 100644 pyproject.toml
+ create mode 100644 src/dcrisk/__init__.py
+ create mode 100644 src/dcrisk/copula/__init__.py
+ create mode 100644 src/dcrisk/copula/gaussian.py
+ create mode 100644 src/dcrisk/copula/gumbel.py
+ create mode 100644 src/dcrisk/dashboards/__init__.py
+ create mode 100644 src/dcrisk/dashboards/streamlit_app.py
+ create mode 100644 src/dcrisk/econ/__init__.py
+ create mode 100644 src/dcrisk/econ/incidence.py
+ create mode 100644 src/dcrisk/econ/market.py
+ create mode 100644 src/dcrisk/econ/operator.py
+ create mode 100644 src/dcrisk/frequency/__init__.py
+ create mode 100644 src/dcrisk/frequency/nb_gamma.py
+ create mode 100644 src/dcrisk/pricing/__init__.py
+ create mode 100644 src/dcrisk/pricing/loadings.py
+ create mode 100644 src/dcrisk/pricing/pure.py
+ create mode 100644 src/dcrisk/pricing/xol.py
+ create mode 100644 src/dcrisk/reliability/__init__.py
+ create mode 100644 src/dcrisk/reliability/arrhenius.py
+ create mode 100644 src/dcrisk/reliability/fault_tree.py
+ create mode 100644 src/dcrisk/reliability/markov.py
+ create mode 100644 src/dcrisk/sde/__init__.py
+ create mode 100644 src/dcrisk/sde/ptcyber.py
+ create mode 100644 src/dcrisk/severity/__init__.py
+ create mode 100644 src/dcrisk/severity/gpd.py
+ create mode 100644 src/dcrisk/severity/lognormal.py
+ create mode 100644 src/dcrisk/severity/mixture.py
+ create mode 100644 tests/__init__.py
+ create mode 100644 tests/test_smoke.py
+
+=== Commit log ===
+  d4aec05 Ali Denewade <aliactsc@gmail.com>
+    chore: scaffold dcrisk project from working paper
+  
+  Reorganise the working paper into a research-grade layout:
+  - paper/         original .tex sources (unchanged); reference PDF preserved
+  - src/dcrisk/    simulation library: reliability (Markov, fault-tree, Arrhenius),
+                   severity (lognormal / GPD / mixture), frequency (NB + Cox),
+                   copula (Gaussian, Gumbel), SDE (coupled V-T-C), pricing
+                   (pure, loadings, XoL), econ (operator optimum, market
+                   equilibrium, incidence) and a Streamlit dashboard.
+  - notebooks/     six paper-aligned, end-to-end runnable notebooks
+  - tests/         pytest smoke suite (one assertion per subpackage)
+  - pyproject.toml hatchling build; Makefile orchestrates paper / sim / app / test
+  
+  No conda env, system packages or VS Code extensions have been installed yet;
+  that work is gated by the user's review of this commit (Step 3 of setup).
+  
+  
+  
+   .gitignore                                   |   63 +
+   LICENSE                                      |   21 +
+   Makefile                                     |   80 ++
+   README.md                                    |  101 ++
+   notebooks/01_compound_nb_gpd.ipynb           |   93 ++
+   notebooks/02_markov_chain_reliability.ipynb  |   69 +
+
+Working tree status (should be clean):
+  (clean)
+
+Verifying .gitignore fixes:
+  setup.log ignored?           no
+  paper/build/.gitkeep ignored? no
+
+Re-staging .gitignore + setup.log into a follow-up commit:

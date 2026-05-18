@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 *.egg-info/
 *.egg
-build/
+/build/
 dist/
 .eggs/
 .pytest_cache/
@@ -31,6 +31,7 @@ profile_default/
 *.fdb_latexmk
 *.fls
 *.log
+!setup.log
 *.out
 *.toc
 *.lof
