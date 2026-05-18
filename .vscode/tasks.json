@@ -1,0 +1,66 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build paper",
+            "type": "shell",
+            "command": "make paper",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$tex-chktex"],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "Run all notebooks",
+            "type": "shell",
+            "command": "conda run -n dcrisk --no-capture-output bash -c 'make sim'",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Launch dashboard",
+            "type": "shell",
+            "command": "conda run -n dcrisk --no-capture-output streamlit run src/dcrisk/dashboards/streamlit_app.py",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": "conda run -n dcrisk --no-capture-output python -m pytest -q",
+            "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Lint (ruff + mypy)",
+            "type": "shell",
+            "command": "conda run -n dcrisk --no-capture-output bash -c 'ruff check src tests && mypy src'",
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        }
+    ]
+}

@@ -6963,3 +6963,132 @@ Note for the user:
   Affects pytest, streamlit, papermill — anything that has a system version.
   Makefile assumes activation (the 'check-env' target warns if not active).
 
+
+====================================================================
+Step 4 — VS Code config: 2026-05-18T06:54:02+02:00
+====================================================================
+
+Currently installed extensions (snapshot):
+  anthropic.claude-code
+  continue.continue
+  intelligentactuaries.intelligent-actuaries
+  ms-azuretools.vscode-containers
+  ms-python.debugpy
+  ms-python.python
+  ms-python.vscode-pylance
+  ms-python.vscode-python-envs
+  ms-vscode-remote.remote-containers
+  openai.chatgpt
+  rjmacarthy.twinny
+  sst-dev.opencode
+  tomoki1207.pdf
+
+Installing missing extensions (15):
+  [OK]   James-Yu.latex-workshop
+  [!!]   valentjn.vscode-ltex
+         Installing extensions...
+         Extension 'valentjn.vscode-ltex' not found.
+         Make sure you use the full extension ID, including the publisher, e.g.: ms-dotnettools.csharp
+         Failed Installing Extensions: valentjn.vscode-ltex
+  [OK]   efoerster.texlab
+  [OK]   ms-python.black-formatter
+  [OK]   ms-python.isort
+  [OK]   charliermarsh.ruff
+  [OK]   ms-toolsai.jupyter
+  [skip] ms-toolsai.jupyter-renderers (already installed)
+  [OK]   yzhang.markdown-all-in-one
+  [OK]   shd101wyy.markdown-preview-enhanced
+  [OK]   tamasfe.even-better-toml
+  [OK]   redhat.vscode-yaml
+  [OK]   eamodio.gitlens
+  [OK]   mhutchie.git-graph
+  [OK]   streetsidesoftware.code-spell-checker
+  Installing extensions...
+  Installing extension 'ltex-plus.vscode-ltex-plus'...
+  Extension 'ltex-plus.vscode-ltex-plus' v15.6.1 was successfully installed.
+
+Final extension count: 31
+
+Full extension list now:
+  anthropic.claude-code
+  charliermarsh.ruff
+  continue.continue
+  eamodio.gitlens
+  efoerster.texlab
+  intelligentactuaries.intelligent-actuaries
+  james-yu.latex-workshop
+  ltex-plus.vscode-ltex-plus
+  mhutchie.git-graph
+  ms-azuretools.vscode-containers
+  ms-python.black-formatter
+  ms-python.debugpy
+  ms-python.isort
+  ms-python.python
+  ms-python.vscode-pylance
+  ms-python.vscode-python-envs
+  ms-toolsai.jupyter
+  ms-toolsai.jupyter-keymap
+  ms-toolsai.jupyter-renderers
+  ms-toolsai.vscode-jupyter-cell-tags
+  ms-toolsai.vscode-jupyter-slideshow
+  ms-vscode-remote.remote-containers
+  openai.chatgpt
+  redhat.vscode-yaml
+  rjmacarthy.twinny
+  shd101wyy.markdown-preview-enhanced
+  sst-dev.opencode
+  streetsidesoftware.code-spell-checker
+  tamasfe.even-better-toml
+  tomoki1207.pdf
+  yzhang.markdown-all-in-one
+
+JSON validity of .vscode/* files:
+  [✗] .vscode/settings.json     INVALID JSON
+  [✓] .vscode/tasks.json          66 lines,  2104 bytes
+  [✓] .vscode/launch.json         65 lines,  2224 bytes
+
+Cross-check Python interpreter path exists:
+  lrwxrwxrwx 1 ali ali 10 May 18 06:47 /home/ali/miniconda3/envs/dcrisk/bin/python -> python3.12
+
+Cross-check kernel spec path exists:
+  -rw-rw-r-- 1 ali ali 286 May 18 06:51 /home/ali/miniconda3/envs/dcrisk/share/jupyter/kernels/dcrisk/kernel.json
+Validating settings.json with a JSONC-aware parser (strip // and /* */ first):
+  [OK] settings.json parses as JSONC (40 top-level keys)
+  Top-level keys:
+    - python.defaultInterpreterPath
+    - python.terminal.activateEnvInCurrentTerminal
+    - python.analysis.typeCheckingMode
+    - python.analysis.extraPaths
+    - python.testing.pytestEnabled
+    - python.testing.unittestEnabled
+    - python.testing.pytestArgs
+    - [python]
+    - black-formatter.args
+    - isort.args
+    - ruff.lint.args
+    - jupyter.kernels.filter
+    - notebook.defaultFormatter
+    - notebook.formatOnSave.enabled
+    - jupyter.askForKernelRestart
+    - latex-workshop.latex.tools
+    - latex-workshop.latex.recipes
+    - latex-workshop.latex.rootFile.useSubFile
+    - latex-workshop.latex.rootFile.doNotPrompt
+    - latex-workshop.latex.search.rootFiles.include
+
+====================================================================
+Step 4 SUMMARY: 2026-05-18T06:57:08+02:00
+====================================================================
+Extensions installed (16 new + 13 pre-existing = 31 total):
+  Note: valentjn.vscode-ltex unpublished; substituted with
+        ltex-plus.vscode-ltex-plus (community-maintained fork).
+
+VS Code config files created:
+  -rw-rw-r-- 1 ali ali 2224 May 18 06:56 launch.json
+  -rw-rw-r-- 1 ali ali 6011 May 18 06:55 settings.json
+  -rw-rw-r-- 1 ali ali 2104 May 18 06:56 tasks.json
+
+Final tree of .vscode/:
+  .vscode/launch.json
+  .vscode/settings.json
+  .vscode/tasks.json

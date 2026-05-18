@@ -1,0 +1,174 @@
+{
+    // ------------------------------------------------------------------
+    // Python interpreter
+    // ------------------------------------------------------------------
+    "python.defaultInterpreterPath": "/home/ali/miniconda3/envs/dcrisk/bin/python",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.extraPaths": ["${workspaceFolder}/src"],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": ["tests"],
+
+    // ------------------------------------------------------------------
+    // Format on save: Black + isort + Ruff
+    // ------------------------------------------------------------------
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll.ruff": "explicit"
+        }
+    },
+    "black-formatter.args": ["--line-length", "100"],
+    "isort.args": ["--profile", "black", "--line-length", "100"],
+    "ruff.lint.args": ["--config", "${workspaceFolder}/pyproject.toml"],
+
+    // ------------------------------------------------------------------
+    // Jupyter
+    // ------------------------------------------------------------------
+    "jupyter.kernels.filter": [
+        { "path": "/home/ali/miniconda3/envs/dcrisk/share/jupyter/kernels/dcrisk", "type": "jupyterKernel" }
+    ],
+    "notebook.defaultFormatter": "ms-python.black-formatter",
+    "notebook.formatOnSave.enabled": true,
+    "jupyter.askForKernelRestart": false,
+
+    // ------------------------------------------------------------------
+    // LaTeX Workshop — build into paper/build/ from inside paper/
+    // ------------------------------------------------------------------
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-pdf",
+                "-interaction=nonstopmode",
+                "-shell-escape",
+                "-outdir=build",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "latexmk-clean",
+            "command": "latexmk",
+            "args": ["-c", "-outdir=build"],
+            "env": {}
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk (default)",
+            "tools": ["latexmk"]
+        }
+    ],
+    "latex-workshop.latex.rootFile.useSubFile": false,
+    "latex-workshop.latex.rootFile.doNotPrompt": true,
+    "latex-workshop.latex.search.rootFiles.include": ["paper/dc_paper.tex"],
+    "latex-workshop.latex.outDir": "%DIR%/build",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.view.pdf.invertMode.enabled": "auto",
+    "latex-workshop.synctex.afterBuild.enabled": true,
+    "latex-workshop.synctex.synctexjs.enabled": false,
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",
+        "*.out", "*.toc", "*.acn", "*.acr", "*.alg", "*.glg", "*.glo",
+        "*.gls", "*.fls", "*.log", "*.fdb_latexmk", "*.snm", "*.nav",
+        "*.vrb", "*.synctex.gz", "*.synctex(busy)", "*.run.xml", "*.bcf"
+    ],
+    "latex-workshop.latexindent.path": "latexindent",
+    "latex-workshop.message.update.show": false,
+
+    // ------------------------------------------------------------------
+    // LTeX (grammar/style for LaTeX + Markdown)
+    // ------------------------------------------------------------------
+    "ltex.language": "en-GB",
+    "ltex.disabledRules": {
+        "en-GB": ["EN_QUOTES", "PASSIVE_VOICE"]
+    },
+    "ltex.additionalRules.enablePickyRules": false,
+
+    // ------------------------------------------------------------------
+    // Spell-check — dcrisk-specific dictionary
+    // ------------------------------------------------------------------
+    "cSpell.words": [
+        "actuarial",
+        "alidenewade",
+        "Arrhenius",
+        "ASHRAE",
+        "Boltzmann",
+        "CircuiTikZ",
+        "copula",
+        "copulas",
+        "Cox",
+        "Cramer",
+        "dcrisk",
+        "Denewade",
+        "Deg",
+        "diffrax",
+        "Esscher",
+        "Gumbel",
+        "hyperscale",
+        "ipykernel",
+        "jaxlib",
+        "Kolmogorov",
+        "kpsewhich",
+        "latexmk",
+        "lifelines",
+        "Lognormal",
+        "Lundberg",
+        "Markov",
+        "MERIDIAN",
+        "miniconda",
+        "papermill",
+        "pgfplots",
+        "Pigouvian",
+        "pyextremes",
+        "siunitx",
+        "Solvency",
+        "stochastic",
+        "tcolorbox",
+        "texlive",
+        "tikz",
+        "Tier",
+        "tocloft",
+        "TVaR",
+        "Witwatersrand",
+        "Wits"
+    ],
+    "cSpell.languageSettings": [
+        {
+            "languageId": "latex",
+            "allowCompoundWords": true
+        }
+    ],
+
+    // ------------------------------------------------------------------
+    // File explorer hygiene — hide build artefacts from the tree
+    // ------------------------------------------------------------------
+    "files.exclude": {
+        "**/__pycache__":      true,
+        "**/.pytest_cache":    true,
+        "**/.mypy_cache":      true,
+        "**/.ruff_cache":      true,
+        "**/.ipynb_checkpoints": true,
+        "**/*.egg-info":       true
+    },
+    "search.exclude": {
+        "paper/build/**": true,
+        "**/__pycache__": true,
+        "**/.*_cache":    true
+    },
+
+    // ------------------------------------------------------------------
+    // Editor defaults
+    // ------------------------------------------------------------------
+    "editor.rulers": [100],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true
+}
