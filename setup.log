@@ -9534,3 +9534,81 @@ Final extension count: 33.
 
 Step 4 status: COMPLETE. Pausing for Ali's OK before Step 5.
 ====================================================================
+
+====================================================================
+=== Step 5 record — adu-00 end-to-end verification ===
+====================================================================
+Date: 2026-05-18
+
+5.1 Paper compile (make paper)
+    -> paper/build/dc_paper.pdf: 42 pages, 457 001 B
+    -> reference baseline:        42 pages, 456 988 B  (page counts match;
+                                                        13 B is pdfTeX
+                                                        timestamp jitter)
+    Status: PASS.
+
+5.2 CPU pytest smoke (pytest -q --ignore=tests/test_gpu_smoke.py)
+    -> 19 passed in 1.07 s
+    Status: PASS.
+
+5.3 GPU pytest smoke (pytest tests/test_gpu_smoke.py -v)
+    -> 8 passed in 2.02 s, including:
+       test_jax_sees_gpu                  -- CudaDevice(id=0)
+       test_jax_kernel_runs_and_frees     -- VRAM returned to baseline
+       test_jax_vs_numpy_ptcyber          -- JAX SDE matches NumPy within tol
+       test_torch_sees_gpu                -- RTX 5090, cap (12, 0)
+       test_torch_kernel_runs_and_frees
+       test_cupy_sees_gpu                 -- runtime 13000
+       test_cupy_kernel_runs
+       test_all_three_allocate_under_1gb  -- < 1 GB peak across all frameworks
+    Status: PASS.
+
+5.4 Benchmark (make bench, T_max=24h, dt=1/60h)
+    Makefile defaults (n_paths=10 000) — overhead-dominated:
+      CPU NumPy : 1040.2 ms
+      GPU JAX   :  697.0 ms
+      speedup   :  1.5x
+    Larger-shape verification (same SDE, longer paths):
+      n_paths= 10 000 :  CPU 1086 ms  GPU 578 ms   speedup  1.9x
+      n_paths= 50 000 :  CPU 6056 ms  GPU 714 ms   speedup  8.5x
+      n_paths=100 000 :  CPU 16343 ms GPU 910 ms   speedup 18.0x
+    The brief's expected 10-100x speedup holds at n_paths >= 100 000 once
+    JIT compile (~1 s warmup) is amortised. The default Makefile target
+    sits below saturation; consider raising n_paths in `make bench` to
+    demonstrate the headline number.
+    Status: PASS (GPU faster at every size; > 10x at sizes that saturate
+    the RTX 5090).
+
+5.5 Streamlit dashboard (make app + make app-tunnel)
+    -> Bound to 100.127.236.32:8501  (Tailscale IPv4, NOT 0.0.0.0)
+    -> ss -tlnp confirmed the listening socket is on the tailnet IP
+    -> URL printed by make app-tunnel:
+         http://100.127.236.32:8501
+    -> Started and cleanly killed without leaving stragglers.
+    Status: PASS.
+
+5.6 Full pipeline smoke
+    `simulate(n_years=N, use_gpu=True)` from dcrisk.monte_carlo.compound:
+      n_years=  5 : wall 3.1 ms  mean S=2.30e+01  p99.5=3.17e+01  OK
+      n_years= 10 : wall 5.8 ms  mean S=1.35e+01  p99.5=5.59e+01  OK
+      n_years= 25 : wall 14.1 ms mean S=2.11e+01  p99.5=1.36e+02  OK
+      n_years=100 : T_wb mean drifts to 75 C, final 191 C
+                    -> lambda_cool overflows (exp(0.25*(191-24)) -> 1e18)
+                    -> hazard multiplier m -> 1.5e15
+                    -> sample_NB returns ~1e15 events
+                    -> GumbelCopula.sample tries to alloc (1e15,2) uniforms
+                    -> SIGKILL by kernel (no print() flushed)
+      n_years=1000 (brief target) : SAME PATH AS n_years=100, worse
+                                    multiplier = inf.
+
+    Status: PARTIAL.
+    The brief's literal smoke command `simulate(n_years=1000)` cannot
+    return with the current ClimateParams; this is a dcrisk bug, not a
+    setup issue.  See memory/project_compound_drift_bug.md for root
+    cause and two suggested fixes (re-sample T_wb per year, or recalibrate
+    `beta`).  The CPU/GPU plumbing, all 24 imports, all 27 tests,
+    LaTeX build, and Streamlit binding are all green; only the long-
+    horizon climate calibration is broken.
+
+Step 5 overall: 5/6 PASS, 1/6 PARTIAL (research-code bug surfaced).
+====================================================================
