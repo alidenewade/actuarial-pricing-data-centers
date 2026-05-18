@@ -9420,3 +9420,62 @@ Preflight summary (adu-00)
 === adu-00 INVENTORY END ===
 ====================================================================
 
+
+====================================================================
+=== Step 3 record — adu-00 install run ===
+====================================================================
+Date: 2026-05-18
+
+Step 3a (apt, sudo):
+  sudo apt install -y ninja-build fd-find latexmk biber texlive-extra-utils \
+    texlive-latex-extra texlive-fonts-extra texlive-pictures \
+    texlive-science texlive-publishers poppler-utils
+  -> ~1.2 GB downloaded; texlive-extra-utils replaces brief's missing 'latexindent' pkg.
+  -> Verified: pdflatex/latexmk/biber/latexindent/kpsewhich present;
+     circuitikz/pgfplots/tcolorbox/mathpazo/tocloft all kpsewhich-resolvable.
+  -> Test compile: latexmk -pdf -outdir=build dc_paper.tex
+     Output: 42 pages, 457 001 B  (reference: 42 pages, 456 988 B; matches).
+
+Step 3b: conda create -n dcrisk-gpu python=3.12
+  -> env at /home/adu-00/conda-envs/dcrisk-gpu, Python 3.12.13
+
+Step 3c: conda-forge CPU science stack
+  -> resolved key versions: numpy 2.4.5, scipy 1.17.1, pandas 2.3.3 (downgraded
+     from 3.0.3 by Step 3e pyextremes/copulas constraint), polars 1.40.1,
+     matplotlib 3.10.9, scikit-learn 1.8.0, jupyterlab 4.5.7, papermill 2.7.0,
+     pytest 9.0.3, black 26.3.1, ruff 0.15.13, mypy 1.20.2, duckdb 1.5.2.
+  -> gtk3 post-link script printed a cosmetic warning about Snap-leaked GTK lib;
+     not blocking, our pipeline uses matplotlib Agg backend headless.
+
+Step 3d: GPU stack (REVISED for driver 595/CUDA 13.2 — cuda13 wheels):
+  pip install "jax[cuda13]"         -> jax 0.10.0 + jax-cuda13-{pjrt,plugin}
+  pip install torch torchvision     -> torch 2.11.0+cu128, torchvision 0.26.0+cu128
+                  --index-url https://download.pytorch.org/whl/cu128
+  pip install cupy-cuda13x          -> cupy 14.0.1
+  GPU smoke verification:
+    JAX:  devices=[CudaDevice(id=0)], default_backend='gpu', 1k×1k matmul OK
+    Torch: cuda.is_available()=True, RTX 5090 cap=(12,0), 2k×2k matmul OK,
+           peak=40.1 MiB
+    CuPy: runtime=13000, RTX 5090, total=32 088 MiB, matmul OK, used=32 MiB
+  Post-install nvidia-smi: 4 403 / 27 686 / 32 607 MiB (no leaked alloc).
+  Note: torch wheel pulled its own nvidia-*-cu12 stack; coexists with
+        jax-cuda13 wheels via private dlopen.
+
+Step 3e: domain pip
+  -> copulas 0.14.1, pyextremes 2.5.0, scikit-extremes 0.1.0, chaospy 4.3.21,
+     diffrax 0.7.2, equinox 0.13.8, optax 0.2.8, jaxtyping 0.3.9,
+     lifelines 0.30.3, reliability 0.9.0, streamlit 1.57.0, panel 1.8.10,
+     pydantic 2.13.4, pingouin 0.6.1, joblib 1.5.x, loky 3.5.6.
+
+Step 3f: register ipykernel
+  -> First install landed in Snap sandbox path due to XDG_DATA_HOME leak
+     from Snap-packaged VS Code. Moved to /home/adu-00/.local/share/jupyter/
+     kernels/dcrisk-gpu and reinstalled with `env -u XDG_DATA_HOME`.
+  -> kernel.json argv[0] = /home/adu-00/conda-envs/dcrisk-gpu/bin/python.
+
+Editable install of dcrisk:
+  pip install -e .  -> dcrisk 0.1.0
+  All 24 submodules import OK from a fresh interpreter.
+
+Step 3 status: COMPLETE.
+====================================================================
