@@ -5,12 +5,17 @@ a reproducibility reference.
 
 ## `dc_paper_original.pdf`
 
-- Built before the project was scaffolded into its current layout — it is the
-  exact PDF that was sitting next to the `.tex` sources at the start of the
-  setup session (412 365 bytes, SHA-256
-  `20676bf9afc8f3ea3a2e9884088207bf36438740c936b3a86d317bca15c070d4`).
-- Kept here so future builds can be compared against a known-good output
-  (page count, file size, SyncTeX alignment).
+- The known-good build delivered with the **2026-05-18 cooling-section
+  rewrite**: 456 988 bytes, 42 pages, SHA-256
+  `e5d608e47f76b7680bc3a02a907fa41100bf02c017f26508bc91f206abc72a04`.
+- Compiled on the laptop and copied across with the matching
+  `dc_paper.tex` (74 897 B) and `cooling_section.tex` (29 731 B). Use it as
+  the byte-for-byte reference for the next `make paper` on adu-00 (compare
+  page count, ToC alignment, and figure placement).
+- The previous baseline (412 365 B, SHA `20676bf9afc8…`) was the pre-rewrite
+  build with the placeholder `cooling_section.tex`. It has been superseded;
+  see `git log -- paper/reference/dc_paper_original.pdf` to retrieve it if
+  ever needed.
 - **Do not edit.** If the paper changes substantively and this reference is
   no longer meaningful, replace it deliberately and update this README.
 

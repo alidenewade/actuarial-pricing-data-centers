@@ -9234,3 +9234,189 @@ Preflight summary (what changes for the GPU spec)
 6. Streamlit currently binds to ?? (check streamlit_app.py vs Tailscale IP requirement)
 7. cooling_section.tex referenced in brief but NOT in repo — likely never made it across
 ====================================================================
+
+====================================================================
+=== adu-00 INVENTORY (Step 1, fresh)  2026-05-18T20:47:12+02:00 ===
+=== Host: adu-00-B850M-D3HP    Kernel: 6.17.0-23-generic    User: adu-00 ===
+====================================================================
+
+Section 1: System & build tooling
+====================================================================
+  [V] gcc          /usr/bin/gcc  (gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0)
+  [V] g++          /usr/bin/g++  (g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0)
+  [V] gfortran     /usr/bin/gfortran  (GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0)
+  [V] make         /usr/bin/make  (GNU Make 4.3)
+  [V] cmake        /usr/bin/cmake  (cmake version 3.28.3)
+  [V] pkg-config   /usr/bin/pkg-config  (1.8.1)
+  [X] ninja        MISSING
+  [V] git          /usr/bin/git  (git version 2.43.0)
+  [V] curl         /usr/bin/curl  (curl 8.5.0 (x86_64-pc-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.10)
+  [V] wget         /usr/bin/wget  (GNU Wget 1.21.4 built on linux-gnu.)
+  [V] unzip        /usr/bin/unzip  (UnZip 6.00 of 20 April 2009, by Debian. Original by Info-ZIP.)
+  [V] jq           /usr/bin/jq  (jq-1.7)
+  [V] rg           rg  (ripgrep 14.1.1 (rev d29891451d))
+  [X] fd           MISSING
+  [X] fdfind       MISSING
+
+Git config:
+  user.name  = Ali Denewade
+  user.email = aliactsc@gmail.com
+  init.defaultBranch = (unset)
+
+Section 2: Python / conda
+====================================================================
+python3:  /usr/bin/python3  -> Python 3.12.3
+pip:      /usr/bin/pip
+conda:    /home/adu-00/miniconda3/condabin/conda
+mamba:    MISSING
+
+conda --version: conda 26.3.2
+
+conda env list (NOT to be modified):
+  
+  # conda environments:
+  #
+  # * -> active
+  # + -> frozen
+  adu                      /home/adu-00/conda-envs/adu
+  ia-r                     /home/adu-00/conda-envs/ia-r
+  p4v8                     /home/adu-00/conda-envs/p4v8
+  base                     /home/adu-00/miniconda3
+  
+
+dcrisk-gpu env: NOT PRESENT  -> will create in Step 3b
+
+Base env package count: 144
+
+Section 3: GPU / CUDA
+====================================================================
+  GPU0: NVIDIA GeForce RTX 5090
+  Driver:  595.58.03
+  VRAM:  total= 32607 MiB used= 4457 MiB free= 27633 MiB
+  Driver-reported CUDA runtime: 13.2
+  nvcc (system): MISSING
+  /usr/local/cuda*: none
+  Existing conda envs with CUDA libs:
+    /home/adu-00/conda-envs/ia-r/include/hwloc/cuda.h
+    /home/adu-00/conda-envs/ia-r/include/hwloc/cudart.h
+
+Section 4: LaTeX
+====================================================================
+  [X] pdflatex      MISSING
+  [X] latexmk       MISSING
+  [X] lualatex      MISSING
+  [X] biber         MISSING
+  [X] latexindent   MISSING
+  [X] kpsewhich     MISSING
+  Required LaTeX packages:
+    [?] circuitikz.sty     (kpsewhich missing, cannot check)
+    [?] pgfplots.sty       (kpsewhich missing, cannot check)
+    [?] tcolorbox.sty      (kpsewhich missing, cannot check)
+    [?] titlesec.sty       (kpsewhich missing, cannot check)
+    [?] fancyhdr.sty       (kpsewhich missing, cannot check)
+    [?] mathpazo.sty       (kpsewhich missing, cannot check)
+    [?] tocloft.sty        (kpsewhich missing, cannot check)
+
+Paper compile test:  NOT RUN (pdflatex missing on adu-00; will retry after Step 3a).
+
+Section 5: Networking (READ ONLY — will NOT modify)
+====================================================================
+  tailscale:
+    100.127.236.32  adu-tutor-host   aliactsc@  linux    -                           
+    100.96.113.34   fas-datart-2026  aliactsc@  linux    offline, last seen 47m ago  
+    100.67.78.57    quietlife        aliactsc@  windows  offline, last seen 8h ago   
+    
+    # Health check:
+    #     - Tailscale can't reach the configured DNS servers. Internet connectivity may be affected.
+  Local tailnet IPv4: 100.127.236.32
+  cloudflared systemd status: active / enabled
+  Listening TCP ports (top 25):
+    State  Recv-Q Send-Q               Local Address:Port  Peer Address:PortProcess                           
+    LISTEN 0      4096                    127.0.0.54:53         0.0.0.0:*                                     
+    LISTEN 0      511                      127.0.0.1:44412      0.0.0.0:*    users:(("code",pid=142896,fd=53))
+    LISTEN 0      4096                     127.0.0.1:11434      0.0.0.0:*                                     
+    LISTEN 0      32                    192.168.50.1:5900       0.0.0.0:*    users:(("x11vnc",pid=5163,fd=8)) 
+    LISTEN 0      4096                     127.0.0.1:9876       0.0.0.0:*                                     
+    LISTEN 0      4096                100.127.236.32:59991      0.0.0.0:*                                     
+    LISTEN 0      4096                     127.0.0.1:631        0.0.0.0:*                                     
+    LISTEN 0      4096                 127.0.0.53%lo:53         0.0.0.0:*                                     
+    LISTEN 0      64                       127.0.0.1:5345       0.0.0.0:*                                     
+    LISTEN 0      4096   [fd7a:115c:a1e0::1938:ec20]:61714         [::]:*                                     
+    LISTEN 0      4096                         [::1]:631           [::]:*                                     
+    LISTEN 0      32                            [::]:5903          [::]:*    users:(("x11vnc",pid=4317,fd=8)) 
+    LISTEN 0      32                            [::]:5902          [::]:*    users:(("x11vnc",pid=4319,fd=8)) 
+    LISTEN 0      32                            [::]:5901          [::]:*    users:(("x11vnc",pid=4318,fd=8)) 
+    LISTEN 0      32                            [::]:5900          [::]:*    users:(("x11vnc",pid=5163,fd=9)) 
+  Port 8501 (Streamlit) collision check:
+    [V] 8501 free
+
+Section 6: VS Code
+====================================================================
+  VSCODE_IPC_HOOK_CLI: unset
+  ~/.vscode-server: absent
+  snap code:        /snap/bin/code
+  Mode: LOCAL VS Code on adu-00 (use 'code --install-extension')
+  Currently-installed extensions (first 30):
+    anthropic.claude-code
+    github.copilot-chat
+    github.remotehub
+    ms-azuretools.vscode-containers
+    ms-vscode-remote.remote-containers
+    ms-vscode.azure-repos
+    ms-vscode.remote-repositories
+    ms-vscode.vscode-chat-customizations-evaluations
+    openai.chatgpt
+    tomoki1207.pdf
+
+Section 7: Node
+====================================================================
+  node: /home/adu-00/.nvm/versions/node/v22.22.3/bin/node  v22.22.3
+  npm:  /home/adu-00/.nvm/versions/node/v22.22.3/bin/npm  10.9.8
+  global packages:
+    /home/adu-00/.nvm/versions/node/v22.22.3/lib
+    ├── corepack@0.34.6
+    └── npm@10.9.8
+    
+
+Section 8: Project state
+====================================================================
+  Working tree: /home/adu-00/ali/actuarial-pricing-data-centers
+  Branch:       main
+  HEAD:         a43daa3  'chore: scaffold dcrisk project on adu-00 (GPU-enabled)'
+  Status:
+     M paper/cooling_section.tex
+     M paper/dc_paper.tex
+     M paper/reference/README.md
+     M paper/reference/dc_paper_original.pdf
+  Tex/PDF sizes:
+    paper/dc_paper.tex                                74897 B
+    paper/appendix.tex                                19380 B
+    paper/econ_section.tex                            34075 B
+    paper/cooling_section.tex                         29731 B
+    paper/reference/dc_paper_original.pdf            456988 B
+  Leftover LaTeX aux in paper/:
+
+====================================================================
+Preflight summary (adu-00)
+====================================================================
+  [APT to add]:    ninja-build, fd-find, latexmk, biber, latexindent,
+                   texlive-latex-extra, texlive-fonts-extra, texlive-pictures,
+                   texlive-science, texlive-publishers, pdftotext (poppler-utils)
+  [Conda env]:     dcrisk-gpu (Python 3.12) — to be created in Step 3b
+  [GPU note]:      Driver 595.58.03 / CUDA 13.2 — use jax[cuda13], torch cu128,
+                   cupy-cuda13x wheels.  Brief's cu121 lines must be revised
+                   before running Step 3d.
+  [Scaffold]:      cooling/, monte_carlo/, ptcyber_gpu.py, notebooks 04b/07/08,
+                   tests/test_gpu_smoke.py are already on disk from the laptop
+                   pass.  Step 2 is a verification step only.
+  [Network]:       Tailscale + cloudflared healthy.  Will not touch.
+                   Streamlit will bind to tailscale --4 IPv4 in Step 4/5.
+  [Risks flagged]: a long-running python process is holding 4.4 GB of VRAM
+                   right now (likely Ollama or a notebook from another env).
+                   Will NOT kill it — only allocate < 1 GB for GPU smoke tests.
+
+  PAUSE HERE for Ali's OK before Step 2.
+====================================================================
+=== adu-00 INVENTORY END ===
+====================================================================
+

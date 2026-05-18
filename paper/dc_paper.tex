@@ -152,9 +152,9 @@
 \newtcolorbox{nbox}[1][]{enhanced,breakable,
   colback=iataupe!55!iabone, colframe=iaaccent,
   boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
-  fonttitle=\sffamily\bfseries\color{iadark},
-  coltitle=iadark,
-  title={\textsc{Novel contribution}},
+  fonttitle=\sffamily\bfseries,
+  coltitle=iabone,
+  title={\color{iabone}\textsc{Novel contribution}},
   attach boxed title to top left={xshift=4mm,yshift=-2mm},
   boxed title style={colback=iaaccent,colframe=iaaccent,sharp corners,
                      boxrule=0pt,size=fbox},
@@ -163,9 +163,9 @@
 \newtcolorbox{rbox}[1][]{enhanced,breakable,
   colback=iataupe!40!iabone, colframe=iarule,
   boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
-  fonttitle=\sffamily\bfseries\color{iadark},
+  fonttitle=\sffamily\bfseries,
   coltitle=iabone,
-  title={\textsc{Remark}},
+  title={\color{iabone}\textsc{Remark}},
   attach boxed title to top left={xshift=4mm,yshift=-2mm},
   boxed title style={colback=iarule,colframe=iarule,sharp corners,
                      boxrule=0pt,size=fbox},
@@ -174,9 +174,9 @@
 \newtcolorbox{ebox}[1][]{enhanced,breakable,
   colback=iataupe!70!iabone, colframe=iaaccent!75!iadark,
   boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
-  fonttitle=\sffamily\bfseries\color{iadark},
+  fonttitle=\sffamily\bfseries,
   coltitle=iabone,
-  title={\textsc{Worked example}},
+  title={\color{iabone}\textsc{Worked example}},
   attach boxed title to top left={xshift=4mm,yshift=-2mm},
   boxed title style={colback=iaaccent!75!iadark,colframe=iaaccent!75!iadark,
                      sharp corners,boxrule=0pt,size=fbox},
@@ -597,6 +597,8 @@ $N_{\mathrm{cells}}$    & lithium-ion cells per UPS room  & $10^4$--$10^5$ \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\input{cooling_section}
 
 % ============================================================
 \section{Reliability mathematics: from components to the site}\label{sec:reliability}
@@ -1736,6 +1738,10 @@ September 2022.
 \bibitem[Pickands(1975)]{Pickands1975}
 J.~Pickands, ``Statistical inference using extreme order statistics,''
 \textit{Ann. Statist.}, vol.~3, pp.~119--131, 1975.
+
+\bibitem[Stull(2011)]{Stull2011}
+R.~Stull, ``Wet-bulb temperature from relative humidity and air temperature,''
+\textit{J. Appl. Meteorol. Climatol.}, vol.~50, pp.~2267--2269, 2011.
 
 \bibitem[Trivedi(2017)]{Trivedi2017}
 K.~S. Trivedi, \textit{Probability and Statistics with Reliability,
