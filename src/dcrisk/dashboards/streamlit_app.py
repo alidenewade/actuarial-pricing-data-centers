@@ -1,9 +1,10 @@
 """Streamlit dashboard — interactive exploration of the paper's loss model.
 
-Launch with:
+On adu-00, launch via:
+    make app                    # binds to the Tailscale IPv4, port 8501
+
+On the laptop:
     streamlit run src/dcrisk/dashboards/streamlit_app.py
-or:
-    make app
 
 Sidebar sliders control (lambda, xi, sigma, rho, theta). Three live plots:
     (a) OEP curve (1 - F_S) on log-log axes
@@ -13,9 +14,22 @@ Sidebar sliders control (lambda, xi, sigma, rho, theta). Three live plots:
 
 from __future__ import annotations
 
+import shutil
+import subprocess
+
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
+
+
+def _tailscale_url(port: int = 8501) -> str | None:
+    if shutil.which("tailscale") is None:
+        return None
+    try:
+        ip = subprocess.check_output(["tailscale", "ip", "--4"], text=True, timeout=2).strip().splitlines()[0]
+        return f"http://{ip}:{port}"
+    except Exception:
+        return None
 
 from dcrisk.copula.gumbel import GumbelCopula
 from dcrisk.econ.market import equilibrium, plot_equilibrium
@@ -30,6 +44,9 @@ def main() -> None:
     st.caption("Companion to *A Coupled Power-Thermal-Cyber Framework for the "
                "Actuarial Pricing and Insurance of Hyperscale Data Centers* "
                "(Denewade, 2026).")
+    url = _tailscale_url()
+    if url is not None:
+        st.caption(f"Served from adu-00 over Tailscale: {url}")
 
     with st.sidebar:
         st.header("Model parameters")

@@ -30,12 +30,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-sim    = ["numba>=0.59", "tqdm>=4.66"]
+sim    = ["numba>=0.59", "tqdm>=4.66", "joblib>=1.3"]
 stats  = ["statsmodels>=0.14", "pyextremes>=2.7"]
 ui     = ["streamlit>=1.30", "plotly>=5.18"]
 dev    = ["pytest>=8.0", "pytest-cov>=4.1", "hypothesis>=6.92", "black", "isort", "ruff", "mypy"]
 nb     = ["jupyterlab>=4.0", "ipykernel", "ipywidgets", "papermill"]
+# GPU stack — installed on adu-00 (RTX 5090 + driver 595 / CUDA 13).
+# Wheels live on pypi / download.pytorch.org and are not installed by `pip install -e .[all]`;
+# use the Step-3d pip lines from setup.log so you get the right cuda13 vs cuda12 wheel.
+gpu    = ["cupy-cuda13x", "diffrax>=0.5", "equinox>=0.11", "optax>=0.2"]
 all    = ["dcrisk[sim,stats,ui,dev,nb]"]
+all-gpu = ["dcrisk[sim,stats,ui,dev,nb,gpu]"]
 
 [project.urls]
 Homepage = "https://github.com/alidenewade/dcrisk"

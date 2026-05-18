@@ -9137,3 +9137,100 @@ Notebook output verification — each notebook now has executed cells with figur
       code cells: 3   executed: 3   with output: 2   PNG figures: 1
   notebooks/06_supply_demand_equilibrium.ipynb
       code cells: 3   executed: 3   with output: 3   PNG figures: 2
+
+
+====================================================================
+====================================================================
+=== GPU Preflight inventory started: 2026-05-18T20:21+02:00      ===
+=== Host: adu-00-B850M-D3HP   (Tailscale: adu-tutor-host, 100.127.236.32)
+=== User: adu-00   HOME=/home/adu-00
+=== Kernel: 6.17.0-23-generic
+=== NOTE: this directory was previously scaffolded on `fas-datart-2026`
+===       (the laptop). On adu-00 itself nothing is installed yet —
+===       no conda env, no LaTeX, no GPU stack. Source tree synced via git.
+====================================================================
+====================================================================
+
+Section 1 — System & build tooling
+  [V] gcc 13.3.0     [V] g++ 13.3.0    [V] gfortran 13.3.0
+  [V] make 4.3       [V] cmake 3.28.3  [V] pkg-config 1.8.1
+  [V] git 2.43.0     [V] curl  [V] wget  [V] unzip  [V] jq 1.7
+  [V] ripgrep 14.1.1
+  [X] ninja          MISSING
+  [X] fd / fd-find   MISSING
+  git user.name  = Ali Denewade
+  git user.email = aliactsc@gmail.com
+
+Section 2 — Python / conda
+  python3 = /usr/bin/python3 (3.12.3)
+  conda   = /home/adu-00/miniconda3/condabin/conda  (conda 26.3.2)
+  mamba   = MISSING
+  Existing envs (UNTOUCHED): base, adu, ia-r, p4v8
+  dcrisk-gpu env: NOT PRESENT  -> will create
+  base package count: 147
+
+Section 3 — GPU / CUDA  ** REQUIRES OPERATOR ATTENTION **
+  GPU:      NVIDIA GeForce RTX 5090, 32 GB VRAM (4334/32607 MiB in use by Xorg + a long-running python)
+  Driver:   595.58.03           <-- NOT the 580 you wrote in the brief
+  CUDA-runtime reported by driver: 13.2   <-- NOT 12.x
+  nvcc (system):  MISSING
+  /usr/local/cuda*:  none
+  Existing conda envs with CUDA libs: NONE
+  Implication for the brief's pip lines:
+     pip install "jax[cuda12]"   -> needs revisit: prefer jax[cuda13] wheel
+                                    (driver 13.2 is fwd-compat with cu12 wheels,
+                                     but native cu13 wheels are cleaner)
+     pip install torch ... --index-url .../cu121   -> the cu128 channel exists
+                                    on download.pytorch.org and matches the driver;
+                                    cu121 will still load under fwd-compat.
+
+Section 4 — LaTeX (paper compile)
+  [X] pdflatex / latexmk / lualatex / biber / latexindent  ALL MISSING
+  [X] circuitikz, pgfplots, tcolorbox, titlesec, fancyhdr, mathpazo, tocloft  ALL MISSING
+  -> No texlive on this box yet. Step 3a apt installs are needed.
+  Paper compile test: NOT RUN (no pdflatex). Will retry after Step 3a.
+  paper/reference/dc_paper_original.pdf still in place (412 KB).
+
+Section 5 — Networking (read-only; will NOT modify)
+  tailscale:    running. Local node = adu-tutor-host  100.127.236.32 (the box's tailnet name)
+                Other nodes: fas-datart-2026 (offline 21m ago), quietlife (offline 8h)
+  cloudflared:  systemctl is-active = active
+  Listening TCP ports of note (none collide with 8501):
+    127.0.0.1:11434 (ollama)
+    127.0.0.1:27589, 127.0.0.1:9876, 127.0.0.1:5345 (local services)
+    100.127.236.32:59991 (tailscale)
+    192.168.50.1:5900 (VNC on a virtual bridge)
+    nothing on 8501  -> safe for Streamlit
+
+Section 6 — VS Code
+  $VSCODE_IPC_HOOK_CLI: unset (so this is not currently a VS Code remote session)
+  /snap/bin/code present (local install via snap)
+  ~/.vscode-server: does not exist
+  -> Treat as LOCAL VS Code on adu-00. Use `code --install-extension`.
+
+Section 7 — Node
+  node = v22.22.3 (via nvm)
+  npm  = 10.9.8
+
+Section 8 — Project state
+  Working tree at: /home/adu-00/ali/actuarial-pricing-data-centers/   (NOT ~/Projects/...)
+  git status: clean
+  HEAD = 480af7b
+  Source tree: scaffolded to LAPTOP spec (no cooling/, monte_carlo/, no ptcyber_gpu.py,
+               no notebooks 04b/07/08, no test_gpu_smoke.py, no NVIDIA.nsight extension entry)
+  pyproject: dcrisk 0.1.0, no JAX / torch / cupy / diffrax / equinox / optax declared
+  Makefile: laptop targets only (no sim-gpu, app-tunnel, test-gpu, bench)
+  paper files: dc_paper.tex 75 KB, appendix.tex 19 KB, econ_section.tex 34 KB
+  Note: cooling_section.tex named in the brief is NOT in the working tree.
+
+====================================================================
+Preflight summary (what changes for the GPU spec)
+====================================================================
+1. Need to install:  ninja-build, fd-find, texlive-* set, latexmk, biber, latexindent
+2. Need to create:   conda env `dcrisk-gpu` (Python 3.12) + CPU science stack
+3. Need to install GPU stack BUT driver is 595/CUDA 13.2 not 580/CUDA 12  -> ASK USER
+4. Need to extend tree: cooling/, monte_carlo/ packages + 3 GPU notebooks + GPU test
+5. Need to extend Makefile + .vscode/* with the GPU additions
+6. Streamlit currently binds to ?? (check streamlit_app.py vs Tailscale IP requirement)
+7. cooling_section.tex referenced in brief but NOT in repo — likely never made it across
+====================================================================

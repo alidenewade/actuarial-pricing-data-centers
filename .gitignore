@@ -60,5 +60,17 @@ Thumbs.db
 scratch/
 tmp/
 
+# --- CUDA / JAX / Triton caches ---
+.jax_cache/
+.cache/
+~/.cache/jax/
+~/.nv/
+~/.triton/
+.cuda_cache/
+*.ptx
+*.cubin
+# papermill / nbconvert generated figures from notebooks (kept out of git)
+notebooks/fig_*.png
+
 # --- Setup log (keep tracked? user choice — track for reproducibility) ---
 # setup.log is tracked; do NOT ignore.
