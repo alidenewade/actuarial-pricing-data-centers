@@ -9041,3 +9041,99 @@ Step 5 SUMMARY: 2026-05-18T07:01:47+02:00
   5.4 Streamlit dashboard                  PASS — HTTP 200, http://localhost:8501
   5.5 VS Code interpreter binding          PASS — interpreter, kernel, dcrisk all consistent
 
+
+====================================================================
+Executing all notebooks via papermill: 2026-05-18T07:19:04+02:00
+====================================================================
+
+==> notebooks/01_compound_nb_gpd.ipynb
+E[S]  =      43.25
+SD    =      34.23
+Esscher (h=0.001) premium =      44.45
+Wang (lam=0.3)    premium =      53.67
+
+Ending Cell 4------------------------------------------
+Executing:  80%|████████  | 4/5 [00:01<00:00,  3.34cell/s]Executing Cell 5---------------------------------------
+<Figure size 700x450 with 1 Axes>
+Ending Cell 5------------------------------------------
+Executing: 100%|██████████| 5/5 [00:01<00:00,  3.55cell/s]Executing: 100%|██████████| 5/5 [00:02<00:00,  2.27cell/s]
+    exit: 0
+
+==> notebooks/02_markov_chain_reliability.ipynb
+  pi[F   ] = 0.000000
+
+Steady-state availability = 100.0000%
+MTBF (hours from OK to F) = 294,977,670.0
+
+Ending Cell 3------------------------------------------
+Executing Cell 4---------------------------------------
+<Figure size 900x350 with 1 Axes>
+Ending Cell 4------------------------------------------
+Executing: 100%|██████████| 4/4 [00:01<00:00,  3.25cell/s]
+    exit: 0
+
+==> notebooks/03_copula_dependence.ipynb
+Ending Cell 1------------------------------------------
+Executing:  33%|███▎      | 1/3 [00:00<00:01,  1.37cell/s]Executing Cell 2---------------------------------------
+Gaussian upper-tail dependence (closed-form) = 0.0
+Gumbel   upper-tail dependence (closed-form) = 0.5857864376269049
+
+Ending Cell 2------------------------------------------
+Executing:  67%|██████▋   | 2/3 [00:01<00:00,  1.54cell/s]Executing Cell 3---------------------------------------
+<Figure size 1000x450 with 2 Axes>
+Ending Cell 3------------------------------------------
+Executing: 100%|██████████| 3/3 [00:01<00:00,  2.48cell/s]Executing: 100%|██████████| 3/3 [00:01<00:00,  1.72cell/s]
+    exit: 0
+
+==> notebooks/04_sde_simulation.ipynb
+  validate(nb)
+Executing:   0%|          | 0/3 [00:00<?, ?cell/s]Executing notebook with kernel: dcrisk
+Executing Cell 1---------------------------------------
+Ending Cell 1------------------------------------------
+Executing:  33%|███▎      | 1/3 [00:00<00:01,  1.37cell/s]Executing Cell 2---------------------------------------
+Ending Cell 2------------------------------------------
+Executing:  67%|██████▋   | 2/3 [00:01<00:00,  2.07cell/s]Executing Cell 3---------------------------------------
+<Figure size 1000x800 with 4 Axes>
+Ending Cell 3------------------------------------------
+Executing: 100%|██████████| 3/3 [00:01<00:00,  2.88cell/s]Executing: 100%|██████████| 3/3 [00:01<00:00,  2.09cell/s]
+    exit: 0
+
+==> notebooks/05_worked_example_200MW.ipynb
+
+--- XoL ceded loss (d=2.0, ell=8.0) ---
+Monte Carlo on S  =    0.187
+GPD closed form    =    0.163
+
+Ending Cell 3------------------------------------------
+Executing Cell 4---------------------------------------
+<Figure size 700x450 with 1 Axes>
+Ending Cell 4------------------------------------------
+Executing: 100%|██████████| 4/4 [00:01<00:00,  3.13cell/s]Executing: 100%|██████████| 4/4 [00:02<00:00,  1.96cell/s]
+    exit: 0
+
+==> notebooks/06_supply_demand_equilibrium.ipynb
+2          0.571  
+3          0.571  
+4          0.571  
+Ending Cell 3------------------------------------------
+Executing Cell 4---------------------------------------
+K* = 8.682, C(K*) = 7.517
+
+<Figure size 700x450 with 1 Axes>
+Ending Cell 4------------------------------------------
+Executing: 100%|██████████| 4/4 [00:01<00:00,  3.87cell/s]Executing: 100%|██████████| 4/4 [00:01<00:00,  2.43cell/s]
+    exit: 0
+
+Notebook output verification — each notebook now has executed cells with figures:
+  notebooks/01_compound_nb_gpd.ipynb
+      code cells: 4   executed: 4   with output: 3   PNG figures: 1
+  notebooks/02_markov_chain_reliability.ipynb
+      code cells: 3   executed: 3   with output: 3   PNG figures: 1
+  notebooks/03_copula_dependence.ipynb
+      code cells: 2   executed: 2   with output: 2   PNG figures: 1
+  notebooks/04_sde_simulation.ipynb
+      code cells: 2   executed: 2   with output: 1   PNG figures: 1
+  notebooks/05_worked_example_200MW.ipynb
+      code cells: 3   executed: 3   with output: 2   PNG figures: 1
+  notebooks/06_supply_demand_equilibrium.ipynb
+      code cells: 3   executed: 3   with output: 3   PNG figures: 2
