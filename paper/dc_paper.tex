@@ -87,6 +87,12 @@
 \titlespacing*{\subsection}{0pt}{10pt}{4pt}
 \titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
 
+% Start every numbered section on a new page. \clearpage on an
+% already-fresh page is a no-op, so this is safe to apply globally
+% (including the very first section after the table of contents).
+\let\origsection\section
+\renewcommand{\section}{\clearpage\origsection}
+
 % --- caption styling ---
 \usepackage[font={small,sf},labelfont={bf,color=iadark},
             textfont={color=iagrey},labelsep=colon]{caption}
@@ -234,9 +240,8 @@ microeconomic and macroeconomic consequences of insurance pricing.\par}
 \vspace{0.25cm}
 \noindent
 {\sffamily\footnotesize\color{iagrey}%
-Sessional Lecturer, University of the Witwatersrand\\
 Founder, \emph{Intelligent Actuaries}\\
-SOA examination pathway, South Africa\par}
+SOA examination pathway\par}
 
 \vfill
 
@@ -325,6 +330,7 @@ parametric trigger; SCADA; PML; Solvency~II.}
 {\sffamily\footnotesize\color{iadark}\textbf{JEL / MSC}}\quad
 {\footnotesize G22, C46, 62P05, 90B25.}
 
+\clearpage
 \tableofcontents
 \bigskip
 
@@ -406,18 +412,20 @@ prescriptive, but its expected annual availabilities are widely cited
 (Table~\ref{tab:tier}).
 
 \begin{table}[ht]
-\centering\small
+\centering\footnotesize
 \caption{Uptime Institute Tier classification and implied availability.}\label{tab:tier}
-\begin{tabular}{lcccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}clccc>{\raggedright\arraybackslash}p{3.2cm}@{}}
 \toprule
 Tier & Topology & Availability $A$ & Downtime (h/yr) & Electrical \& cooling \\
 \midrule
-I   & $N$           & 99.671\% & 28.8   & Single path, no redundancy \\
-II  & $N{+}1$       & 99.741\% & 22.0   & Redundant components, single path \\
-III & $N{+}1$ concurrent maintainable & 99.982\% & 1.6 & Multiple paths, one active \\
-IV  & $2N$ or $2N{+}1$ fault-tolerant & 99.995\% & 0.4 & Multiple active paths \\
+I   & $N$                              & 99.671\% & 28.8 & Single path, no redundancy \\
+II  & $N{+}1$                          & 99.741\% & 22.0 & Redundant components, single path \\
+III & $N{+}1$ concurrent maintainable  & 99.982\% & 1.6  & Multiple paths, one active \\
+IV  & $2N$ or $2N{+}1$ fault-tolerant  & 99.995\% & 0.4  & Multiple active paths \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 We will use these availabilities as the engineering prior on annual
@@ -464,24 +472,25 @@ Figure~\ref{fig:singleline}.
 
 \begin{figure}[ht]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     every node/.style={font=\footnotesize},
-    blk/.style={draw,rounded corners=2pt,minimum width=1.55cm,minimum height=0.55cm,
+    blk/.style={draw,rounded corners=2pt,minimum width=1.75cm,minimum height=0.65cm,
                 align=center,fill=blue!4},
-    src/.style={draw,circle,minimum size=0.65cm,inner sep=0pt,fill=yellow!15},
-    gen/.style={draw,rectangle,minimum width=1.05cm,minimum height=0.55cm,fill=red!10,align=center},
+    src/.style={draw,circle,minimum size=0.7cm,inner sep=0pt,fill=yellow!15},
+    gen/.style={draw,rectangle,minimum width=1.15cm,minimum height=0.65cm,fill=red!10,align=center},
     bus/.style={draw,line width=1.2pt,blue!55!black},
     line/.style={-{Latex[length=2mm]},thick,blue!55!black},
     fline/.style={thick,blue!55!black},
     label/.style={font=\scriptsize,blue!55!black},
-    x=1cm, y=0.85cm
+    x=1.1cm, y=1.05cm
 ]
 
 % Utility side
 \node[src] (U1) at (0,9) {U1};
 \node[src] (U2) at (6,9) {U2};
-\node[label,above=0.05cm of U1] {Utility A};
-\node[label,above=0.05cm of U2] {Utility B};
+\node[label,above=0.10cm of U1] {Utility A};
+\node[label,above=0.10cm of U2] {Utility B};
 
 % MV switchgear
 \node[blk] (MVA) at (0,7.7) {MV SWGR A\\\SI{34.5}{\kilo\volt}};
@@ -491,14 +500,14 @@ Figure~\ref{fig:singleline}.
 \draw[fline] (U2) -- (MVB);
 
 % Generators / ATS
-\node[gen] (G1) at (-2.0,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
-\node[gen] (G2) at ( 8.0,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
+\node[gen] (G1) at (-2.2,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
+\node[gen] (G2) at ( 8.2,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
 \draw[fline] (G1) -- (MVA);
 \draw[fline] (G2) -- (MVB);
 
 % ATS labels
-\node[label,below=0.05cm of MVA] {ATS-A (closed-transition)};
-\node[label,below=0.05cm of MVB] {ATS-B (closed-transition)};
+\node[label,below=0.12cm of MVA] {ATS-A (closed-transition)};
+\node[label,below=0.12cm of MVB] {ATS-B (closed-transition)};
 
 % Step-down transformers
 \node[blk] (TXA) at (0,6.0) {TX-A\\$34.5/0.48$\,kV};
@@ -545,24 +554,31 @@ Figure~\ref{fig:singleline}.
 \node[label,right=0.1cm of COOL,align=left]
     {Heat $\dot Q = P_{\mathrm{IT}}$\\PUE feedback};
 
-% PMS / SCADA box
-\node[blk,fill=gray!10,minimum width=3.4cm] (PMS) at (9.8,5.5)
+% PMS / SCADA box — narrowed slightly and aimed at .west so the SCADA
+% dashed lines enter cleanly on the left edge instead of plunging into
+% the centre of the box.
+\node[blk,fill=gray!10,minimum width=3.0cm] (PMS) at (10.0,5.5)
     {SCADA / PMS\\(Power \& Monitoring System)};
-\draw[line,dashed,->] (MVA.east) -- ++(0.3,0) -- ++(0,-0.4) -| (PMS);
-\draw[line,dashed,->] (MVB.east) -- ++(0.3,0) -- ++(0,-0.4) -| (PMS);
-\draw[line,dashed,->] (UA.east) -- ++(0.4,0) |- (PMS);
-\draw[line,dashed,->] (UB.east) -- ++(0.4,0) |- (PMS);
+\draw[line,dashed,->] (MVA.east) -- ++(0.4,0) |- (PMS.west);
+\draw[line,dashed,->] (MVB.east) -- ++(0.4,0) |- (PMS.west);
+\draw[line,dashed,->] (UA.east) -- ++(0.6,0) |- (PMS.west);
+\draw[line,dashed,->] (UB.east) -- ++(0.6,0) |- (PMS.west);
 \draw[line,dashed,->] (COOL.north) -- (PMS.south);
 
 % Bracket: "A side" / "B side"
+% A-side brace stays at x=-3 (plenty of free space on the left).
+% B-side brace moved out to x=12 so it sits clear of the SCADA box
+% (whose east edge is at x=11.5). Previously the brace ran straight
+% through the middle of SCADA and the rotated label fell ON TOP of it.
 \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray]
    (-3,8.3) -- (-3,3.1) node[midway,left=0.15cm,rotate=90,anchor=south]
    {\textsl{A-side power train}};
 \draw[decorate,decoration={brace,amplitude=4pt},gray]
-   (9.2,8.3) -- (9.2,3.1) node[midway,right=0.15cm,rotate=-90,anchor=south]
+   (12.0,8.3) -- (12.0,3.1) node[midway,right=0.15cm,rotate=-90,anchor=south]
    {\textsl{B-side power train}};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Single-line wireframe of a Tier-IV $2N$ hyperscale data center.
 Solid lines are power feeders; dashed lines are SCADA telemetry. Each
 half (A, B) carries 100\,\% of the design IT load, so any single
@@ -580,7 +596,7 @@ Table~\ref{tab:eng-params}. They will reappear in the hazard rate
 specification of \S\ref{sec:coupled}.
 
 \begin{table}[ht]
-\centering\small
+\centering\footnotesize
 \caption{Underwriting-relevant electrical engineering parameters.}\label{tab:eng-params}
 \begin{tabular}{lll}
 \toprule
@@ -637,6 +653,7 @@ expanded tree.
 
 \begin{figure}[ht]
 \centering
+\resizebox{0.95\textwidth}{!}{%
 \begin{tikzpicture}[
    every node/.style={font=\footnotesize},
    top/.style={draw,rectangle,rounded corners=2pt,fill=red!15,minimum width=4cm,
@@ -691,7 +708,8 @@ expanded tree.
 \node[bevt,below=0.55cm of CY] (CYb) {Cyber};
 \draw[ln] (CY) -- (CYb);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Simplified fault tree for the top event $T=$ ``IT load lost.''
 Each $E_\bullet$ is itself a series chain of elementary component
 events (utility, generator, ATS, transformer, switchgear, UPS,
@@ -724,23 +742,34 @@ both trains down on one subsystem, total failure). For a $2N$ site:
 
 \begin{figure}[ht]
 \centering
+\resizebox{0.95\textwidth}{!}{%
 \begin{tikzpicture}[
-  node distance=2.2cm and 2.6cm,
-  state/.style={draw,circle,minimum size=1.1cm,fill=blue!5},
-  every edge/.style={draw,thick,->,>=Latex}
+  >=Latex,
+  node distance=3.6cm and 4.0cm,
+  state/.style={draw,circle,minimum size=1.35cm,inner sep=1pt,
+                font=\small,fill=blue!5},
+  every edge/.style={draw,thick,->,>=Latex},
+  every node/.style={font=\footnotesize},
+  ratelbl/.style={midway,font=\footnotesize,inner sep=2pt,fill=white,
+                  fill opacity=0.85,text opacity=1}
 ]
-\node[state] (S0) {OK};
-\node[state,right=of S0,fill=yellow!15] (S1) {Deg$_1$};
-\node[state,right=of S1,fill=orange!20] (S2) {Deg$_2$};
-\node[state,right=of S2,fill=red!25] (SF) {F};
+\node[state]                                  (S0) {OK};
+\node[state,right=of S0,fill=yellow!18]       (S1) {Deg$_1$};
+\node[state,right=of S1,fill=orange!22]       (S2) {Deg$_2$};
+\node[state,right=of S2,fill=red!28]          (SF) {F};
 
-\draw (S0) edge[bend left=15] node[above,font=\scriptsize] {$2\lambda$} (S1);
-\draw (S1) edge[bend left=15] node[below,font=\scriptsize] {$\mu$} (S0);
-\draw (S1) edge[bend left=15] node[above,font=\scriptsize] {$\lambda$} (S2);
-\draw (S2) edge[bend left=15] node[below,font=\scriptsize] {$\mu$} (S1);
-\draw (S2) edge[bend left=15] node[above,font=\scriptsize] {$\lambda_{\mathrm{f}}$} (SF);
-\draw (SF) edge[bend left=15] node[below,font=\scriptsize] {$\mu_{\mathrm{r}}$} (S2);
-\end{tikzpicture}
+% Forward arrows bend upward (label above the upper arc); reverse arrows
+% bend left=28 in the leftward direction, which curves them downward, so
+% their label goes below the lower arc. Semi-opaque white background on
+% the labels keeps them legible even where they get close to an arc.
+\draw (S0) edge[bend left=28]  node[ratelbl,above] {$2\lambda$}                 (S1);
+\draw (S1) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S0);
+\draw (S1) edge[bend left=28]  node[ratelbl,above] {$\lambda$}                  (S2);
+\draw (S2) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S1);
+\draw (S2) edge[bend left=28]  node[ratelbl,above] {$\lambda_{\mathrm{f}}$}     (SF);
+\draw (SF) edge[bend left=28]  node[ratelbl,below] {$\mu_{\mathrm{r}}$}         (S2);
+\end{tikzpicture}%
+}
 \caption{Continuous-time Markov chain on plant states for a $2N$
 data center. $\lambda$: per-train degradation rate. $\mu$: per-train
 repair rate. $\lambda_{\mathrm{f}}$: degraded-to-failed rate, which is
@@ -1050,6 +1079,7 @@ posterior. This is precisely the \emph{credibility} framework of
 B\"uhlmann--Straub, with the engineering prior playing the role of
 the collateral information.
 
+\clearpage
 \begin{rbox}
 \textbf{Cox/doubly-stochastic structure.} The Poisson--Gamma frailty
 in~\eqref{eq:NB} is precisely a \emph{doubly stochastic} (Cox) Poisson
@@ -1672,7 +1702,7 @@ macro-level systemic risk.
 \subsection*{Notation summary}
 
 \begin{table}[ht]
-\centering\small
+\centering\footnotesize
 \begin{tabular}{lll}
 \toprule
 Symbol & Meaning & Section \\

@@ -74,8 +74,12 @@ they support. Each carries a qualitatively different actuarial signature.
 \node[blk,fill=cyan!12] (CT) at (3.5,3.5) {Cooling\\tower};
 \node[blk,fill=blue!8]  (CRAH) at (0.5,1.7) {CRAH\\unit};
 
-\draw[wpipe] (CT) -- (CH) node[midway,above,label] {warm};
-\draw[wpipe,transform canvas={yshift=-3pt}] (CH) -- (CT) node[midway,below,label] {hot};
+% Two return/supply pipes separated by 10pt so the arrows don't merge
+% and the labels sit cleanly on the outside of each pipe.
+\draw[wpipe,transform canvas={yshift= 5pt}] (CT) -- (CH)
+   node[midway,above,label,inner sep=1pt] {warm};
+\draw[wpipe,transform canvas={yshift=-5pt}] (CH) -- (CT)
+   node[midway,below,label,inner sep=1pt] {hot};
 \draw[wpipe] (CH) -- (CRAH) node[midway,left,label] {chilled W};
 
 % Server racks (air-cooled)
@@ -288,12 +292,16 @@ understanding the chemistry.
 Three families are in service:
 
 \begin{table}[ht]
-\centering\small
+\centering\footnotesize
 \caption{Comparison of cooling fluid families relevant to data center
 immersion and direct-to-chip cooling. Values are nominal; consult
 manufacturer datasheets for binding numbers.}\label{tab:fluids}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{3.4cm}cccccp{2.6cm}}
+% Natural-width left-aligned columns + \resizebox so every cell sits on
+% one line (the previous p{3.4cm}/p{2.6cm} forced "3M Novec 7100/7500
+% (2-ph)" and "high GWP phase-out" to wrap).
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lcccccl@{}}
 \toprule
 Family & Boil pt & Dielectric & GWP & Tox & Cost & Risk profile \\
        & ($^\circ$C) & (kV/mm) & (CO$_2$ eq) & & & \\
@@ -304,7 +312,8 @@ Synthetic ester (1-ph)     & ---    & 60--85 & low      & very low & med  & visc
 3M FC-72/FC-3284 (2-ph)    & 56--130 & 12--14 & 7400+   & low      & high & high GWP phase-out \\
 Hydrofluoroether (HFE)     & 56--98 & 11--13 & 200--600 & low      & high & PFAS regulation \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \paragraph{Phase-change kinetics.}
@@ -351,6 +360,10 @@ structure.
 
 \begin{figure}[ht]
 \centering
+% Natural width is ~16.2cm (the "Thermal-runaway prop." label stretches
+% the rightmost ievt box past its 2.4cm minimum), which overflows the
+% 15.9cm textwidth. \resizebox guarantees the diagram fits exactly.
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
    every node/.style={font=\footnotesize},
    top/.style={draw,rectangle,rounded corners=2pt,fill=red!15,minimum width=4cm,
@@ -409,7 +422,8 @@ structure.
 \draw[ln] (G4) -- (TRa);
 \draw[ln] (G4) -- (TRb);
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Cooling-system fault tree. The four top-level branches feed
 qualitatively different severity distributions. The
 \textit{liquid--electrical} branch is an AND gate

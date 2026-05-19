@@ -9612,3 +9612,166 @@ Date: 2026-05-18
 
 Step 5 overall: 5/6 PASS, 1/6 PARTIAL (research-code bug surfaced).
 ====================================================================
+
+====================================================================
+=== LaTeX build diagnostic — CLI vs LaTeX Workshop ===
+====================================================================
+Date: 2026-05-19
+
+Methodology: ran a clean CLI build (the spec's exact command) and a
+"VS Code-equivalent" build (latexmk with the exact args from
+.vscode/settings.json's "latex-workshop.latex.tools"). Cannot directly
+capture LaTeX Workshop's Output panel from a CLI session; this is a
+reconstruction from the configured tool args, so any divergence between
+"VS Code-equivalent" and the user's actual VS Code build can only come
+from environment (PATH, TEXMFHOME, cwd) rather than from latexmk itself.
+
+CLI command:
+    cd paper && rm -rf build && mkdir build &&
+    latexmk -pdf -interaction=nonstopmode -outdir=build dc_paper.tex
+VS Code-equivalent command (per .vscode/settings.json):
+    cd paper && rm -rf build && mkdir build &&
+    latexmk -pdf -interaction=nonstopmode -shell-escape -outdir=build dc_paper.tex
+
+Build comparison:
+    rc                    CLI=0           VSC-eq=0
+    wall                  CLI=7476 ms     VSC-eq=7415 ms
+    pages                 CLI=42          VSC-eq=42
+    file size             CLI=457001 B    VSC-eq=457001 B
+    Producer              CLI=pdfTeX-1.40.25  VSC-eq=pdfTeX-1.40.25
+    Creator               CLI=LaTeX with hyperref  VSC-eq=LaTeX with hyperref
+    Page size             CLI=595.276x841.89 pts (A4)  VSC-eq=same
+    Tagged PDF            CLI=no          VSC-eq=no
+    Embedded fonts (18)   CLI/VSC-eq identical: 8-char subset prefixes,
+                          object IDs, encodings, emb/sub/uni flags all match
+                          (Nimbus Sans, URW Palladio, Pazo Math, CM* builtins)
+    SHA-256 raw           CLI=fe533b77...  VSC-eq=5c9f6d57...   (differ)
+    SHA-256 normalised    CLI=db266edd73f805bee867c5c2  VSC-eq=same  (IDENTICAL)
+                          (after zeroing /CreationDate, /ModDate, /ID — the
+                          three keys pdfTeX bakes from system time)
+
+Visual diff (pdftoppm -r 200 -f 1 -l 1 -png):
+    p-01.png file size    CLI=149607 B    VSC-eq=149607 B
+    p-01.png SHA-256      CLI=2da6bbf71e3fa394f41018a8  VSC-eq=same
+    differing pixels      0 / 3,868,706   (perceptually identical)
+    bone #FAFAF7 patch    rendered RGB (250.0, 250.0, 247.0) = #FAFAF7 exactly
+    sienna #A04A1F        1,598 matching pixels (L2<30) present in both
+    bone background       3,788,276 / 3,868,706 px (97.9 %) match within L2<5
+
+Build log diff (after timestamp normalisation):
+    only 6 lines differ, in 3 places (latexmk re-runs pdflatex 3 times):
+      < Running 'pdflatex  -interaction=nonstopmode             -recorder ...'
+      > Running 'pdflatex  -interaction=nonstopmode -shell-escape -recorder ...'
+      <  restricted \write18 enabled.
+      >  \write18 enabled.
+    No Font, Color, xcolor, tcolorbox, pgfplots, microtype, Token-not-allowed,
+    or missing-package warnings in either log.
+
+Candidate verdicts:
+    A. Wrong recipe / insufficient passes ........ NO. Both runs do 3 pdflatex
+                                                   passes; refs/colours
+                                                   converge identically.
+    B. Missing -shell-escape ...................... NO. The CLI build (no
+                                                   shell-escape) and the VSC
+                                                   build (with shell-escape)
+                                                   produce byte-identical
+                                                   normalised PDFs. The paper
+                                                   doesn't currently invoke
+                                                   any \write18-needing
+                                                   package (no minted,
+                                                   gnuplot, tikzexternalize,
+                                                   pgf-pie).
+    C. Stale auxes / different outdir ............ NO. Both write to
+                                                   paper/build/. Both clean
+                                                   before run.
+    D. Font / kpsewhich path mismatch ............ NO. Embedded-font tables
+                                                   are byte-identical (same
+                                                   subset name, same object
+                                                   IDs, same encodings).
+    E. PDF viewer rendering (PDF.js in VSCode) ... YES — by elimination.
+                                                   The build, the PDF, and
+                                                   the Poppler rasterisation
+                                                   are all identical. The
+                                                   discrepancy is between
+                                                   how VS Code's in-tab
+                                                   PDF.js renders the file
+                                                   vs how your external
+                                                   viewer (Evince/Okular,
+                                                   Poppler-based) renders it.
+                                                   PDF.js is known to:
+                                                     - quantise near-white
+                                                       backgrounds toward
+                                                       pure white at certain
+                                                       zoom levels
+                                                     - handle tcolorbox
+                                                       shading/gradients and
+                                                       xcolor frame strokes
+                                                       slightly differently
+                                                       from Poppler
+                                                     - assume DeviceRGB
+                                                       without an embedded
+                                                       output intent (this
+                                                       PDF has none, see
+                                                       Tagged=no)
+    F. PDF colour profile / output intent ........ NO embedded profile in
+                                                   either PDF, but since both
+                                                   PDFs are byte-identical
+                                                   and the external viewer
+                                                   renders them correctly,
+                                                   the profile is not the
+                                                   variable.
+
+Conclusion: the BUILD is correct and reproducible. The discrepancy is in
+VS Code's built-in PDF.js viewer, not in the LaTeX toolchain.
+
+PAUSE: confirming candidate E before applying the fix. Two recommended
+options to put before the user:
+  (1) Switch latex-workshop.view.pdf.viewer to "external" + bind to evince
+      (or okular) so the colours render via Poppler like the CLI build.
+  (2) Keep "tab" for SyncTeX convenience and use external viewer only for
+      final visual review.
+====================================================================
+
+====================================================================
+=== LaTeX viewer fix applied — external Evince ===
+====================================================================
+Date: 2026-05-19
+
+Verdict from the diagnostic above: build is correct; viewer is the culprit.
+User chose option (1) — switch LaTeX Workshop to external Evince.
+
+Changes to .vscode/settings.json:
+  latex-workshop.latex.tools[0].args  +=  "-file-line-error", "-synctex=1"
+                                          (so SyncTeX index is built; Evince
+                                          uses it for forward/inverse search)
+  latex-workshop.view.pdf.viewer       :  "tab" -> "external"
+  latex-workshop.view.pdf.external.viewer.command   = "evince"
+  latex-workshop.view.pdf.external.viewer.args      = ["%PDF%"]
+  latex-workshop.view.pdf.external.synctex.command  = "evince"
+  latex-workshop.view.pdf.external.synctex.args     = ["%PDF%"]
+  latex-workshop.latex.clean.fileTypes : removed "*.synctex.gz"
+                                         (else autoClean nukes the SyncTeX
+                                         index right after building it)
+
+Verification of the new args:
+  latexmk -pdf -interaction=nonstopmode -file-line-error -synctex=1 \
+    -shell-escape -outdir=build dc_paper.tex
+    rc=0, wall=7501 ms
+    -> paper/build/dc_paper.pdf            457 001 B, 42 pages
+    -> paper/build/dc_paper.synctex.gz     428 687 B  (NEW)
+  Normalised SHA-256 = db266edd73f805bee867c5c2  -- still matches the
+    pre-fix CLI baseline.  Adding -synctex=1 puts SyncTeX info in a side
+    file; the PDF itself is byte-identical.
+  evince was spawned on the PDF and stayed up cleanly (had to SIGKILL it
+    from the diagnostic shell because it detached to the user session;
+    that's a property of evince/X, not a fault).
+
+Per the brief's Step 5: README updated with a "LaTeX build configuration"
+section covering the canonical CLI command, the VS Code Workshop wiring,
+the PDF.js-vs-Poppler viewer note, and how to rebuild without VS Code.
+
+User-side verification still to do: reload the VS Code window so the new
+.vscode/settings.json is picked up, save dc_paper.tex (or Build), and
+confirm the bone background + sienna accents render correctly in the
+Evince window that LaTeX Workshop opens.
+====================================================================

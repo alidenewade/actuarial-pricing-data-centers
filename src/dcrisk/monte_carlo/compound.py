@@ -44,6 +44,13 @@ def simulate(
 ) -> pd.Series:
     """Run an annual-loss compound simulation and return S as a pandas Series.
 
+    Each simulated year is an independent OEP scenario: a fresh 1-year
+    wet-bulb path is drawn from `simulate_Twb` and feeds the cooling-hazard
+    multiplier for that year alone. Climate drift therefore acts within a
+    single year (negligible at beta = 0.03 C/year^2), not cumulatively
+    across an n_years-long calendar — the latter ran T_wb up to thousands
+    of degrees and crashed the aggregator at long horizons.
+
     Notes
     -----
     The `use_gpu` flag is propagated to the SDE/cooling layers when they
@@ -58,26 +65,20 @@ def simulate(
     cop = GumbelCopula(theta=theta_gumbel)
     cp = climate or ClimateParams()
 
-    # one wet-bulb path per simulated year (daily resolution)
-    _, T_wb = simulate_Twb(T_years=float(n_years), dt=1.0 / 365.0, n_paths=1,
-                           params=cp, rng=rng)
-    T_wb = T_wb[0]  # (n_years * 365 + 1,)
+    dt = 1.0 / 365.0
+    # n_years independent 1-year T_wb paths in one call; row y is year y.
+    _, T_wb = simulate_Twb(T_years=1.0, dt=dt, n_paths=n_years, params=cp, rng=rng)
 
     S = np.empty(n_years, dtype=np.float64)
-    days_per_year = 365
     for y in range(n_years):
-        # hazard multiplier from this year's slice
-        slice_ = T_wb[y * days_per_year:(y + 1) * days_per_year + 1]
-        m = _hazard_multiplier(slice_, dt=1.0 / 365.0)
+        m = _hazard_multiplier(T_wb[y], dt=dt)
 
-        # frequency
         n_events = int(sample_NB(nu, lam * m, size=1, rng=rng)[0])
         if n_events == 0:
             S[y] = 0.0
             continue
 
-        # severities under copula dependence — invert U_2 marginal via GPD
-        UV = cop.sample(n_events, rng=rng)        # (n_events, 2) uniforms
+        UV = cop.sample(n_events, rng=rng)
         losses = gpd.quantile(UV[:, 1])
         S[y] = float(losses.sum())
 

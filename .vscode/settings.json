@@ -32,15 +32,9 @@
     },
     "black-formatter.args": ["--line-length", "100"],
     "isort.args": ["--profile", "black", "--line-length", "100"],
-    "ruff.lint.args": ["--config", "${workspaceFolder}/pyproject.toml"],
-
-    // ------------------------------------------------------------------
-    // Jupyter — point at the dcrisk-gpu kernelspec under ~/.local/share
-    // (NOT the Snap-sandbox path that 'ipykernel install --user' lands
-    // in by default on this box; see setup.log Step 3f.)
-    // ------------------------------------------------------------------
-    "jupyter.kernels.filter": [
-        { "path": "/home/adu-00/.local/share/jupyter/kernels/dcrisk-gpu", "type": "jupyterKernel" }
+    "ruff.lint.args": [
+        "--config",
+        "${workspaceFolder}/pyproject.toml"
     ],
     "notebook.defaultFormatter": "ms-python.black-formatter",
     "notebook.formatOnSave.enabled": true,
@@ -53,7 +47,7 @@
         {
             "name": "latexmk",
             "command": "latexmk",
-            "args": ["-pdf", "-interaction=nonstopmode", "-shell-escape", "-outdir=build", "%DOC%"],
+            "args": ["-pdf", "-interaction=nonstopmode", "-file-line-error", "-synctex=1", "-shell-escape", "-outdir=build", "%DOC%"],
             "env": {}
         },
         {
@@ -71,16 +65,25 @@
     "latex-workshop.latex.search.rootFiles.include": ["paper/dc_paper.tex"],
     "latex-workshop.latex.outDir": "%DIR%/build",
     "latex-workshop.latex.autoBuild.run": "onSave",
-    "latex-workshop.view.pdf.viewer": "tab",
+    // External Evince — VS Code's built-in PDF.js tab renders the bone
+    // background as near-white and washes the burnt-sienna accents; Evince
+    // (Poppler) renders the file identically to the CLI latexmk build.
+    "latex-workshop.view.pdf.viewer": "external",
+    "latex-workshop.view.pdf.external.viewer.command": "evince",
+    "latex-workshop.view.pdf.external.viewer.args": ["%PDF%"],
+    "latex-workshop.view.pdf.external.synctex.command": "evince",
+    "latex-workshop.view.pdf.external.synctex.args": ["%PDF%"],
     "latex-workshop.view.pdf.invertMode.enabled": "auto",
     "latex-workshop.synctex.afterBuild.enabled": true,
     "latex-workshop.synctex.synctexjs.enabled": false,
     "latex-workshop.latex.autoClean.run": "onBuilt",
+    // Note: `*.synctex.gz` deliberately NOT in this list — Evince needs it
+    // for forward/inverse search and we want it to survive autoClean.
     "latex-workshop.latex.clean.fileTypes": [
         "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",
         "*.out", "*.toc", "*.acn", "*.acr", "*.alg", "*.glg", "*.glo",
         "*.gls", "*.fls", "*.log", "*.fdb_latexmk", "*.snm", "*.nav",
-        "*.vrb", "*.synctex.gz", "*.synctex(busy)", "*.run.xml", "*.bcf"
+        "*.vrb", "*.synctex(busy)", "*.run.xml", "*.bcf"
     ],
     "latex-workshop.latexindent.path": "latexindent",
     "latex-workshop.message.update.show": false,

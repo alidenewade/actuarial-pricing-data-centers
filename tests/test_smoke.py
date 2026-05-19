@@ -196,3 +196,26 @@ def test_streamlit_module_imports():
     pytest.importorskip("streamlit")
     from dcrisk.dashboards import streamlit_app
     assert hasattr(streamlit_app, "main")
+
+
+# ---------------------------------------------------------------------------
+# compound aggregator (regression guard against the climate-drift OOM)
+# ---------------------------------------------------------------------------
+
+def test_compound_simulate_long_horizon_stays_finite():
+    # Regression for the per-year-resample fix: with the old code,
+    # simulate(n_years=1000) drifted T_wb to thousands of degrees, hazard
+    # exp()-overflowed, NB returned ~1e15 events, and the kernel was killed
+    # before this assertion could even run. The fix decouples per-year
+    # scenarios from a single multi-decade calendar.
+    from dcrisk.monte_carlo.compound import simulate
+    s = simulate(n_years=1000, use_gpu=False, seed=42)
+    arr = np.asarray(s)
+    assert arr.shape == (1000,)
+    assert np.all(np.isfinite(arr)), "S must be finite at long horizons"
+    assert arr.min() >= 0.0, "annual aggregate losses are non-negative"
+    # Loose physical bound — pre-fix this would have been ~1e15+; with the
+    # fix p99.5 stays in the low hundreds under the default parameters.
+    assert np.quantile(arr, 0.995) < 1e4, (
+        f"p99.5 = {np.quantile(arr, 0.995):.2e} — climate drift may be back"
+    )
