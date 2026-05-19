@@ -71,32 +71,11 @@ at the top:
 
 ## Methodology
 
-Every formula is taken verbatim from the paper. See:
-
-- **Markov stationary U** — eq. (10) in §5
-- **Compound aggregate** — eq. (22) in §7
-- **GPD POT severity** — eq. (33) in §8
-- **Premium principles** — §10.1-§10.5
-- **Solvency II 1-in-200 anchor** — §13.1
-
-The companion `dcrisk` Python package
+Every formula is taken verbatim from the paper — see §5, §7, §8, §10,
+and §13 for the underlying equations. The companion `dcrisk` Python
+package
 ([github.com/alidenewade/actuarial-pricing-data-centers](https://github.com/alidenewade/actuarial-pricing-data-centers))
-provides a GPU-accelerated Monte Carlo back-end that reproduces every
-numerical result in the paper to 3 significant figures.
-
-## Visual Identity
-
-The Space mirrors the chrome of the lab's other simulators
-([nanoeconomics-simulation](https://huggingface.co/spaces/intelligentactuaries/nanoeconomics-simulation))
-so the two read as siblings of the same research lab.
-
-- Bone background `#FAFAF7`, deep warm near-black headings `#1B1815`,
-  burnt-sienna accents `#A04A1F`. Same palette as the paper PDF and the
-  `intelligentactuaries.com` website.
-- Theme-aware CSS via `prefers-color-scheme` so Plotly text contrast
-  remains readable under both light and dark Streamlit themes.
-- Bundled `figures/` directory ships all 16 paper PNG figures so the
-  Figures tab works fully offline.
+reproduces every numerical result.
 
 ## Run locally
 
@@ -108,19 +87,6 @@ streamlit run app.py
 ```
 
 Then open <http://localhost:8501> in your browser.
-
-For development with `uv`:
-
-```bash
-uv sync
-uv run streamlit run app.py
-```
-
-## Research
-
-This work is produced by the **Intelligent Actuaries Research Lab**.
-For questions, collaborations, or feedback, contact
-[research@intelligentactuaries.com](mailto:research@intelligentactuaries.com).
 
 ## Reference
 
