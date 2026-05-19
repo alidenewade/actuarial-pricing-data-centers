@@ -1,0 +1,44 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{circuitikz}[american,
+   scale=0.95,
+   every node/.style={font=\footnotesize}]
+
+% Utility source (Thevenin equivalent of the grid)
+\draw (0,0) to[V,l_=$V_{\mathrm{grid}}$,invert] (0,2);
+\draw (0,2) to[R,l=$R_g$] (2,2);
+\draw (2,2) to[L,l=$jX_g$] (4,2);
+\node at (4.5,2.6) {\scriptsize Utility};
+
+% Transformer drawn as two adjacent inductors plus a divider
+\draw (4,2) -- (5,2);
+\draw (5,2) to[L,l=\,] (6.2,2);
+\draw[ultra thick] (6.35,2.55) -- (6.35,1.45);
+\draw[ultra thick] (6.55,2.55) -- (6.55,1.45);
+\draw (6.7,2) to[L,l=\,] (7.9,2);
+\node at (6.45,3.2) {\scriptsize TX 34.5/0.48\,kV};
+
+% Transformer series impedance (lumped on LV side)
+\draw (7.9,2) to[R,l=$R_T$] (9.4,2);
+\draw (9.4,2) to[L,l=$jX_T$] (10.9,2);
+
+% Cable
+\draw (10.9,2) to[R,l=$R_c$] (12.2,2);
+\draw (12.2,2) to[L,l=$jX_c$] (13.5,2);
+
+% Fault location (LV bus)
+\draw[thick,red] (13.5,2) -- (13.5,0.5);
+\node[red] at (14.2,1.5) {\scriptsize fault $F$};
+\draw[red,thick] (13.5,0.5) to[short,*-] (13.5,0.1);
+
+% Ground return
+\draw (13.5,-0.3) node[ground]{};
+\draw (0,0) -- (13.5,0) -- (13.5,-0.1);
+
+% Annotation
+\node[align=left] at (6.5,-0.7)
+  {\scriptsize $Z_{\mathrm{th}} = (R_g+R_T+R_c) + j(X_g+X_T+X_c)$};
+\end{circuitikz}
+\end{document}

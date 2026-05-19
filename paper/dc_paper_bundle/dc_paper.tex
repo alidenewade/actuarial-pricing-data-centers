@@ -1,0 +1,1789 @@
+% ============================================================
+% A Coupled Power-Thermal-Cyber Framework for Actuarial Pricing
+% and Insurance of Hyperscale Data Centers
+%
+% Working paper - novel framework integrating electrical
+% reliability engineering, mathematical statistics, and
+% actuarial mathematics.
+%
+% Visual theme: institutional research house — deep warm black,
+% bone background, burnt-sienna accent rules. Palatino serif body,
+% Helvetica sans headings.
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% --- math ---
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{siunitx}
+\sisetup{detect-all,group-separator={,},per-mode=symbol}
+
+% --- layout ---
+\usepackage[a4paper,margin=1in,headheight=14pt,headsep=18pt]{geometry}
+\usepackage{booktabs,array,tabularx,multirow}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+
+% --- typography: Palatino serif body + Helvetica sans, matching math
+% This is the standard institutional-research-house combination.
+\usepackage{mathpazo}
+\linespread{1.08}             % a touch more leading for premium feel
+\usepackage[scaled=0.92]{helvet}  % sans family, slightly scaled
+\usepackage{courier}              % monospace
+\usepackage{microtype}            % subtle horizontal balance
+
+% --- IA brand colour palette ---
+% deep warm near-black (signature dark from intelligentactuaries.com)
+\definecolor{iadark}{HTML}{1B1815}
+% bone / cream paper background
+\definecolor{iabone}{HTML}{FAFAF7}
+% burnt sienna accent (institutional warmth)
+\definecolor{iaaccent}{HTML}{A04A1F}
+% soft taupe / pale background for callouts
+\definecolor{iataupe}{HTML}{F2EDE6}
+% subtle rule colour
+\definecolor{iarule}{HTML}{3A332D}
+% supporting grey for captions
+\definecolor{iagrey}{HTML}{5A524A}
+
+% Apply the bone background to the page
+\pagecolor{iabone}
+
+% --- graphics ---
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,
+                decorations.pathreplacing,decorations.markings,
+                shadows.blur,backgrounds}
+
+% --- algorithms & refs ---
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=iaaccent,citecolor=iaaccent,
+            urlcolor=iaaccent]{hyperref}
+
+% --- section title styling (titlesec) ---
+\usepackage{titlesec}
+% Numbered sections: sans bold, IA dark, accent rule underneath
+\titleformat{\section}
+  {\sffamily\bfseries\large\color{iadark}}
+  {\thesection.}{0.6em}
+  {}
+  [\vspace{2pt}{\color{iaaccent}\titlerule[0.6pt]}]
+\titleformat{\subsection}
+  {\sffamily\bfseries\normalsize\color{iadark}}
+  {\thesubsection.}{0.5em}
+  {}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\small\color{iadark}}
+  {\thesubsubsection.}{0.5em}
+  {}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
+
+% Start every numbered section on a new page. \clearpage on an
+% already-fresh page is a no-op, so this is safe to apply globally
+% (including the very first section after the table of contents).
+\let\origsection\section
+\renewcommand{\section}{\clearpage\origsection}
+
+% --- caption styling ---
+\usepackage[font={small,sf},labelfont={bf,color=iadark},
+            textfont={color=iagrey},labelsep=colon]{caption}
+
+% --- running headers/footers ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% header: title on left, section/chapter on right, hairline rule underneath
+\fancyhead[L]{\footnotesize\sffamily\color{iagrey}%
+  Coupled Power--Thermal--Cyber Framework}
+\fancyhead[R]{\footnotesize\sffamily\color{iagrey}\nouppercase{\leftmark}}
+\fancyfoot[C]{\footnotesize\sffamily\color{iadark}\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection\quad #1}{}}
+\addtolength{\headheight}{2pt}
+% draw the accent hairline rule under the header
+\AtBeginDocument{\renewcommand{\headrule}{%
+  {\color{iaaccent}\hrule height 0.4pt}\vspace{1pt}%
+  {\color{iarule}\hrule height 0.15pt}}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- theorem styles, with IA-style accent ---
+\newtheoremstyle{ia}
+  {6pt}{6pt}              % above/below
+  {\itshape}              % body font
+  {0pt}                   % indent
+  {\sffamily\bfseries\color{iadark}}    % head font
+  {.}                     % head punct
+  {.6em}                  % head-body space
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (\itshape #3\upshape)}}
+\theoremstyle{ia}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- macros ---
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Cor}{\operatorname{Cor}}
+\newcommand{\Prb}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\VaR}{\operatorname{VaR}}
+\newcommand{\TVaR}{\operatorname{TVaR}}
+\newcommand{\ES}{\operatorname{ES}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\given}{\,\vert\,}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\norm}[1]{\left\Vert #1 \right\Vert}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% --- IA-themed callout boxes ---
+% Novel contribution: accent-stripe with subtle taupe interior
+\newtcolorbox{nbox}[1][]{enhanced,breakable,
+  colback=iataupe!55!iabone, colframe=iaaccent,
+  boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
+  fonttitle=\sffamily\bfseries,
+  coltitle=iabone,
+  title={\color{iabone}\textsc{Novel contribution}},
+  attach boxed title to top left={xshift=4mm,yshift=-2mm},
+  boxed title style={colback=iaaccent,colframe=iaaccent,sharp corners,
+                     boxrule=0pt,size=fbox},
+  arc=1.5pt, #1}
+% Remark: muted grey-on-bone
+\newtcolorbox{rbox}[1][]{enhanced,breakable,
+  colback=iataupe!40!iabone, colframe=iarule,
+  boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
+  fonttitle=\sffamily\bfseries,
+  coltitle=iabone,
+  title={\color{iabone}\textsc{Remark}},
+  attach boxed title to top left={xshift=4mm,yshift=-2mm},
+  boxed title style={colback=iarule,colframe=iarule,sharp corners,
+                     boxrule=0pt,size=fbox},
+  arc=1.5pt, #1}
+% Worked example: warmer accent stripe
+\newtcolorbox{ebox}[1][]{enhanced,breakable,
+  colback=iataupe!70!iabone, colframe=iaaccent!75!iadark,
+  boxrule=0pt, leftrule=2.5pt, top=4pt, bottom=4pt, left=8pt, right=8pt,
+  fonttitle=\sffamily\bfseries,
+  coltitle=iabone,
+  title={\color{iabone}\textsc{Worked example}},
+  attach boxed title to top left={xshift=4mm,yshift=-2mm},
+  boxed title style={colback=iaaccent!75!iadark,colframe=iaaccent!75!iadark,
+                     sharp corners,boxrule=0pt,size=fbox},
+  arc=1.5pt, #1}
+
+% --- TOC styling ---
+\usepackage{tocloft}
+\renewcommand{\cftsecfont}{\sffamily\color{iadark}}
+\renewcommand{\cftsubsecfont}{\rmfamily\color{iagrey}}
+\renewcommand{\cftsecpagefont}{\sffamily\color{iadark}}
+\renewcommand{\cftsubsecpagefont}{\rmfamily\color{iagrey}}
+\renewcommand{\cfttoctitlefont}{\sffamily\Large\bfseries\color{iadark}}
+\setlength{\cftbeforesecskip}{4pt}
+
+% Paragraph spacing
+\setlength{\parskip}{4pt}
+
+% Note: \title/\author are not used; the title page is custom below.
+
+\begin{document}
+
+% ---- custom title page: institutional research house style ----
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{2.6cm}
+
+\noindent
+% kicker label
+{\sffamily\footnotesize\color{iaaccent}\textsc{Working paper \textbar{} Risk and capital research}}\\[0.45cm]
+
+% accent rule
+{\color{iaaccent}\rule{2.2cm}{1.2pt}}\\[0.85cm]
+
+% title (LARGE allows good auto-flow)
+\noindent
+{\sffamily\bfseries\LARGE\color{iadark}%
+A Coupled Power--Thermal--Cyber Framework\\[6pt]
+for the Actuarial Pricing and Insurance\\[6pt]
+of Hyperscale Data Centers \par}
+
+\vspace{1.0cm}
+
+% subtitle
+\noindent
+{\rmfamily\itshape\large\color{iagrey}%
+An integrated framework joining electrical reliability engineering,
+mathematical statistics of extremes, classical risk theory, and the
+microeconomic and macroeconomic consequences of insurance pricing.\par}
+
+\vspace{1.8cm}
+
+% author block
+\noindent
+{\sffamily\large\color{iadark}\textbf{Ali Denewade}\par}
+\vspace{0.25cm}
+\noindent
+{\sffamily\footnotesize\color{iagrey}%
+Founder, \emph{Intelligent Actuaries}\\
+SOA examination pathway\par}
+
+\vfill
+
+% bottom band
+\noindent{\color{iarule}\rule{\textwidth}{0.4pt}}\\[8pt]
+\noindent
+\begin{minipage}[t]{0.55\textwidth}
+  {\sffamily\footnotesize\color{iagrey}%
+  \textsc{Draft} \textbar{} \today\par
+  \vspace{2pt}
+  Comments welcome.\par}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.40\textwidth}\raggedleft
+  {\sffamily\footnotesize\color{iagrey}%
+  \texttt{github.com/alidenewade}\\
+  \texttt{huggingface.co/alidenewade}\par}
+\end{minipage}
+
+\end{titlepage}
+
+% reset page numbering to start counting from the abstract page
+\setcounter{page}{1}
+
+% ============================================================
+\noindent{\color{iaaccent}\rule{2.2cm}{1.2pt}}\\[6pt]
+{\sffamily\bfseries\large\color{iadark}Abstract}
+\par\vspace{6pt}
+
+\noindent
+The data center asset class has, within a single decade, evolved from
+specialised commercial real estate into systemically critical
+digital infrastructure. Individual hyperscale campuses now carry total
+insurable values between \$10\,bn and
+\$30\,bn, yet the global property catastrophe
+market struggles to assemble more than \$5\,bn of
+single-asset capacity. The combination of (i) unprecedented
+concentration of capital, (ii) novel physical failure modes
+(lithium-ion thermal runaway, immersion-cooling water-electrical
+contact, accelerated cooling failure under AI training loads),
+(iii) deterministic Service-Level-Agreement liabilities cascading
+into contingent business interruption, and (iv) tightening
+cyber--physical coupling, has produced a risk that does not fit any
+traditional property/casualty pricing template.
+
+We propose an integrated actuarial framework that joins three
+historically separated disciplines: \emph{electrical reliability
+engineering}, \emph{mathematical statistics of extremes}, and
+\emph{classical risk theory}. Our main contributions are:
+\begin{enumerate}[leftmargin=*,nosep,topsep=4pt]
+  \item A continuous-time \textbf{coupled state-space model}
+        $\mathbf{X}_t=(V_t,T_t,C_t)$ of bus voltage, cold-aisle
+        temperature, and cyber load, with an Arrhenius-accelerated
+        instantaneous failure hazard $\lambda_t = h(\mathbf{X}_t)$;
+        thermal runaway is treated as a first-hitting time.
+  \item A \textbf{mapping from Uptime Tier engineering
+        availability to actuarial claim frequency}, allowing
+        underwriters to translate $N+1$/$2N$ topology directly into
+        Poisson intensity.
+  \item A \textbf{compound severity model} blending a lognormal
+        body with a generalised-Pareto tail fitted via Peaks-over-Threshold,
+        recognising the bimodal nature of small operational losses
+        and rare catastrophic site losses.
+  \item A \textbf{Gaussian--copula coupling} between the cyber
+        intensity process and the thermal/electrical degradation
+        process, capturing tail dependence that an independence
+        assumption systematically under-prices.
+  \item A \textbf{hybrid indemnity--parametric product design}
+        in which SCADA telemetry triggers fast partial payments and
+        an indemnity layer settles residual basis risk.
+\end{enumerate}
+We close with a worked pricing example for a \SI{200}{\mega\watt}
+critical-IT-load hyperscale facility, including risk-loaded
+technical premium, Solvency~II Standard Capital, and a
+per-risk excess-of-loss reinsurance illustration.
+
+\par\vspace{4pt}\noindent{\color{iarule}\rule{\textwidth}{0.3pt}}\par\vspace{6pt}
+
+\noindent
+{\sffamily\footnotesize\color{iadark}\textbf{Keywords}}\quad
+{\footnotesize data center insurance; reliability engineering;
+thermal runaway; compound Poisson; Generalised Pareto; copulas;
+parametric trigger; SCADA; PML; Solvency~II.}
+
+\par\vspace{3pt}
+\noindent
+{\sffamily\footnotesize\color{iadark}\textbf{JEL / MSC}}\quad
+{\footnotesize G22, C46, 62P05, 90B25.}
+
+\clearpage
+\tableofcontents
+\bigskip
+
+% ============================================================
+\section{Introduction}\label{sec:intro}
+
+\subsection{The capacity problem}
+
+Hyperscale data center investment is projected by S\&P Global Ratings
+to exceed \$300\,bn per year by 2027.
+Single-asset Total Insured Values (TIV) routinely sit in the
+\SIrange{10}{30}{}\,bn USD range; the broking market estimates
+absorbable single-event loss capacity at no more than
+\$2\,--\,2.5\,bn~\citep{ENR2025,Baldwin2025}. Builders'-risk towers
+of \$2.7\,bn (Marsh~\emph{Nimbus}) and lifecycle programmes of
+\$3.5\,bn (Aon) have been launched specifically to syndicate this
+gap. The structural shortfall is large enough that Swiss~Re estimates
+a single hyperscale site could generate close to \$10\,bn of
+natural-catastrophe insured loss --- $\sim 9\,\%$ of global insured
+catastrophe losses in a typical year. Aggregation is acute: most
+hyperscale campuses are clustered in a handful of ZIP codes (Northern
+Virginia, Phoenix, Dublin, Singapore).
+
+\subsection{Why traditional models fail}\label{ss:whyfail}
+
+Conventional property pricing decomposes risk into a few well-trodden
+sub-perils (fire, water, named storm, machinery breakdown) and treats
+business interruption as a deterministic function of property damage.
+For a data center this decomposition is inadequate for three reasons.
+
+\paragraph{(R1) Multi-physics coupling.} A small electrical fault
+upstream of an Uninterruptible Power Supply (UPS) can cascade into a
+lithium-ion thermal runaway, then propagate through fire to mechanical
+cooling plant, and finally to total IT load loss. The recent NIRS
+Daejeon fire (26~Sept~2025), triggered by a single NMC battery cell
+during a relocation, brought down 647 Korean government services for
+$\approx 22$ hours~\citep{NIRS2025}. None of the conventional univariate
+fire/electrical sub-models capture the coupling explicitly.
+
+\paragraph{(R2) Decoupled BI and downstream SLA liability.} A
+\emph{successful} cyber-defence lockdown can still cause an outage and
+trigger multi-million-dollar SLA penalties to colocation tenants. The
+indemnity-based BI mechanism, which compensates the operator's own
+income loss, does not address the contractual liability layer.
+
+\paragraph{(R3) Concentration and operational tail dependence.}
+Hyperscale tenants concentrate at a handful of Availability Zones. The
+AWS US-East-1 outage of 20~October~2025 caused
+\$38\,M\,--\,\$581\,M of insurable loss~\citep{CyberCube2025} simply by
+disturbing one regional service. This is the digital analogue of an
+earthquake zone --- requiring catastrophe modelling, not standard fire
+underwriting.
+
+\subsection{Our contribution}
+
+Building on the early parametric work of \citet{Parametrix2022}
+on cloud-outage indices, we develop a fully integrated technical
+framework usable by actuaries, reinsurers, and electrical
+engineers in a common notation. Section~\ref{sec:taxonomy} introduces
+the empirical risk taxonomy and anchors. Sections~\ref{sec:topology}
+and~\ref{sec:reliability} present the electrical topology together with
+its reliability mathematics, including a complete fault-tree-to-Markov
+mapping. Section~\ref{sec:coupled} develops the coupled state-space
+hazard model. Sections~\ref{sec:freq}--\ref{sec:dependence} treat
+frequency, severity, and cyber--physical dependence. The pricing,
+product design, and capital framework follow in
+Sections~\ref{sec:pricing}--\ref{sec:capital}, before a fully worked
+example in Section~\ref{sec:example}.
+
+% ============================================================
+\section{Empirical anchors and risk taxonomy}\label{sec:taxonomy}
+
+\subsection{The Uptime Tier system as a prior}\label{ss:tiers}
+
+The Uptime Institute Tier Classification, introduced in 1995 and now
+issued in 122 countries, is the de~facto operational reliability
+prior for the asset class. It is performance-based rather than
+prescriptive, but its expected annual availabilities are widely cited
+(Table~\ref{tab:tier}).
+
+\begin{table}[ht]
+\centering\footnotesize
+\caption{Uptime Institute Tier classification and implied availability.}\label{tab:tier}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}clccc>{\raggedright\arraybackslash}p{3.2cm}@{}}
+\toprule
+Tier & Topology & Availability $A$ & Downtime (h/yr) & Electrical \& cooling \\
+\midrule
+I   & $N$                              & 99.671\% & 28.8 & Single path, no redundancy \\
+II  & $N{+}1$                          & 99.741\% & 22.0 & Redundant components, single path \\
+III & $N{+}1$ concurrent maintainable  & 99.982\% & 1.6  & Multiple paths, one active \\
+IV  & $2N$ or $2N{+}1$ fault-tolerant  & 99.995\% & 0.4  & Multiple active paths \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+We will use these availabilities as the engineering prior on annual
+\emph{site-down hours}, and derive the actuarial claim
+frequency $\lambda$ by an inverse mean-failure-time mapping (see
+\S\ref{ss:freq-from-A}).
+
+\subsection{The empirical peril mix}\label{ss:perils}
+
+The Uptime Institute annual outage analysis attributes recent
+public outages roughly as follows: connectivity / network~29\%,
+power systems~21\%, cooling~12\%, software/configuration~12\%,
+on-site fire (often UPS-battery related)~7\%, with the remainder
+spread across human factors, third-party providers and other causes.
+The fire share is disproportionately destructive: with the migration
+to lithium-ion UPS chemistries (now $\approx 38.5\,\%$ of the data center
+battery market versus 15\,\% in 2020~\citep{NetworkWorld2023}), the
+mean severity of a fire-induced outage has risen sharply.
+
+\subsection{Loss components}\label{ss:components}
+
+For a single site $i$ and a single insured event, total economic loss
+$L^{(i)}$ admits the decomposition
+\begin{equation}\label{eq:loss-decomp}
+L^{(i)} \;=\; \underbrace{L^{(i)}_{\mathrm{PD}}}_{\text{property damage}}
+       + \underbrace{L^{(i)}_{\mathrm{BI}}}_{\text{operator BI}}
+       + \underbrace{L^{(i)}_{\mathrm{SLA}}}_{\text{SLA liability}}
+       + \underbrace{L^{(i)}_{\mathrm{CY}}}_{\text{cyber/data}}
+       + \underbrace{L^{(i)}_{\mathrm{LIAB}}}_{\text{third-party}} .
+\end{equation}
+Each sub-component has its own distributional regime and its own
+dependence structure. The classical assumption $L_{\mathrm{BI}}\propto L_{\mathrm{PD}}$
+is empirically violated: cyber lockdowns and SLA breaches can occur
+without any physical damage at all.
+
+% ============================================================
+\section{Electrical topology of a Tier-IV hyperscale site}\label{sec:topology}
+
+Pricing requires the same electrical situational awareness an
+electrical engineer carries when commissioning the site. We summarise
+the canonical $2N$ topology --- the dominant architecture for new
+hyperscale AI campuses --- in the single-line wireframe of
+Figure~\ref{fig:singleline}.
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    every node/.style={font=\footnotesize},
+    blk/.style={draw,rounded corners=2pt,minimum width=1.75cm,minimum height=0.65cm,
+                align=center,fill=blue!4},
+    src/.style={draw,circle,minimum size=0.7cm,inner sep=0pt,fill=yellow!15},
+    gen/.style={draw,rectangle,minimum width=1.15cm,minimum height=0.65cm,fill=red!10,align=center},
+    bus/.style={draw,line width=1.2pt,blue!55!black},
+    line/.style={-{Latex[length=2mm]},thick,blue!55!black},
+    fline/.style={thick,blue!55!black},
+    label/.style={font=\scriptsize,blue!55!black},
+    x=1.1cm, y=1.05cm
+]
+
+% Utility side
+\node[src] (U1) at (0,9) {U1};
+\node[src] (U2) at (6,9) {U2};
+\node[label,above=0.10cm of U1] {Utility A};
+\node[label,above=0.10cm of U2] {Utility B};
+
+% MV switchgear
+\node[blk] (MVA) at (0,7.7) {MV SWGR A\\\SI{34.5}{\kilo\volt}};
+\node[blk] (MVB) at (6,7.7) {MV SWGR B\\\SI{34.5}{\kilo\volt}};
+
+\draw[fline] (U1) -- (MVA);
+\draw[fline] (U2) -- (MVB);
+
+% Generators / ATS
+\node[gen] (G1) at (-2.2,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
+\node[gen] (G2) at ( 8.2,7.7) {Gen\\ $3\,\mathrm{MW}\times n$};
+\draw[fline] (G1) -- (MVA);
+\draw[fline] (G2) -- (MVB);
+
+% ATS labels
+\node[label,below=0.12cm of MVA] {ATS-A (closed-transition)};
+\node[label,below=0.12cm of MVB] {ATS-B (closed-transition)};
+
+% Step-down transformers
+\node[blk] (TXA) at (0,6.0) {TX-A\\$34.5/0.48$\,kV};
+\node[blk] (TXB) at (6,6.0) {TX-B\\$34.5/0.48$\,kV};
+\draw[fline] (MVA) -- (TXA);
+\draw[fline] (MVB) -- (TXB);
+
+% LV switchgear
+\node[blk] (LVA) at (0,4.7) {LV SWGR A\\480\,V};
+\node[blk] (LVB) at (6,4.7) {LV SWGR B\\480\,V};
+\draw[fline] (TXA) -- (LVA);
+\draw[fline] (TXB) -- (LVB);
+
+% UPS modules
+\node[blk,fill=orange!15] (UA) at (0,3.4) {UPS-A\\Li-ion};
+\node[blk,fill=orange!15] (UB) at (6,3.4) {UPS-B\\Li-ion};
+\draw[fline] (LVA) -- (UA);
+\draw[fline] (LVB) -- (UB);
+
+% Static transfer switches
+\node[blk,fill=green!10] (STSA) at (1.5,2.1) {STS-1};
+\node[blk,fill=green!10] (STSB) at (4.5,2.1) {STS-2};
+\draw[fline] (UA) |- (STSA);
+\draw[fline] (UB) |- (STSA);
+\draw[fline] (UA) |- (STSB);
+\draw[fline] (UB) |- (STSB);
+
+% PDUs
+\node[blk,fill=violet!10] (PD1) at (1.5,0.8) {PDU-1};
+\node[blk,fill=violet!10] (PD2) at (4.5,0.8) {PDU-2};
+\draw[fline] (STSA) -- (PD1);
+\draw[fline] (STSB) -- (PD2);
+
+% Rack loads
+\node[blk,fill=cyan!10,minimum width=4.2cm] (LOAD) at (3,-0.5)
+    {IT load: $\sim$\SI{200}{MW}, $\rho_{\mathrm{rack}}\approx\SI{50}{\kilo\watt\per rack}$};
+\draw[fline] (PD1) -- (LOAD);
+\draw[fline] (PD2) -- (LOAD);
+
+% Cooling plant
+\node[blk,fill=teal!15,minimum width=3.2cm] (COOL) at (9.8,2.1)
+    {Cooling plant\\CRAH + chiller ($2N$)};
+\draw[line,dashed] (LOAD.east) -- ++(2,0) |- (COOL);
+\node[label,right=0.1cm of COOL,align=left]
+    {Heat $\dot Q = P_{\mathrm{IT}}$\\PUE feedback};
+
+% PMS / SCADA box — narrowed slightly and aimed at .west so the SCADA
+% dashed lines enter cleanly on the left edge instead of plunging into
+% the centre of the box.
+\node[blk,fill=gray!10,minimum width=3.0cm] (PMS) at (10.0,5.5)
+    {SCADA / PMS\\(Power \& Monitoring System)};
+\draw[line,dashed,->] (MVA.east) -- ++(0.4,0) |- (PMS.west);
+\draw[line,dashed,->] (MVB.east) -- ++(0.4,0) |- (PMS.west);
+\draw[line,dashed,->] (UA.east) -- ++(0.6,0) |- (PMS.west);
+\draw[line,dashed,->] (UB.east) -- ++(0.6,0) |- (PMS.west);
+\draw[line,dashed,->] (COOL.north) -- (PMS.south);
+
+% Bracket: "A side" / "B side"
+% A-side brace stays at x=-3 (plenty of free space on the left).
+% B-side brace moved out to x=12 so it sits clear of the SCADA box
+% (whose east edge is at x=11.5). Previously the brace ran straight
+% through the middle of SCADA and the rotated label fell ON TOP of it.
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray]
+   (-3,8.3) -- (-3,3.1) node[midway,left=0.15cm,rotate=90,anchor=south]
+   {\textsl{A-side power train}};
+\draw[decorate,decoration={brace,amplitude=4pt},gray]
+   (12.0,8.3) -- (12.0,3.1) node[midway,right=0.15cm,rotate=-90,anchor=south]
+   {\textsl{B-side power train}};
+
+\end{tikzpicture}%
+}
+\caption{Single-line wireframe of a Tier-IV $2N$ hyperscale data center.
+Solid lines are power feeders; dashed lines are SCADA telemetry. Each
+half (A, B) carries 100\,\% of the design IT load, so any single
+component on one side may fail or be taken out for maintenance with no
+load impact. The dual independent utility feeds, dual generator
+plants, dual UPS rooms and dual cooling trains are the physical
+expression of the engineering $2N$ availability target of 99.995\%.}
+\label{fig:singleline}
+\end{figure}
+
+\subsection{Engineering parameters that enter pricing}\label{ss:eng-params}
+
+The underwriting-relevant electrical parameters are summarised in
+Table~\ref{tab:eng-params}. They will reappear in the hazard rate
+specification of \S\ref{sec:coupled}.
+
+\begin{table}[ht]
+\centering\footnotesize
+\caption{Underwriting-relevant electrical engineering parameters.}\label{tab:eng-params}
+\begin{tabular}{lll}
+\toprule
+Symbol & Quantity & Typical value (Tier IV, AI campus) \\
+\midrule
+$P_{\mathrm{IT}}$       & critical IT load                & \SI{50}{\mega\watt}--\SI{500}{\mega\watt} \\
+$\mathrm{PUE}$          & power usage effectiveness       & $1.10$--$1.45$ (best-in-class $1.04$) \\
+$\rho_{\mathrm{rack}}$  & rack power density              & \SIrange{30}{120}{\kilo\watt\per rack} \\
+$T_{\mathrm{ca}}$       & cold-aisle setpoint             & \SIrange{18}{27}{\celsius} (ASHRAE A1) \\
+$\eta_{\mathrm{UPS}}$   & UPS double-conversion efficiency & 0.96--0.98 \\
+$\tau_{\mathrm{auto}}$  & generator autonomy on diesel    & 24--72\,h \\
+$E_{\mathrm{batt}}$     & UPS battery energy              & \SIrange{5}{15}{min} of full load \\
+$N_{\mathrm{cells}}$    & lithium-ion cells per UPS room  & $10^4$--$10^5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\input{cooling_section}
+
+% ============================================================
+\section{Reliability mathematics: from components to the site}\label{sec:reliability}
+
+We assume the reader is familiar with the basic identity
+$R(t)=\exp(-\int_0^t \lambda(s)\dd s)$ and the relationship between
+failure rate $\lambda$, MTBF, MTTR and steady-state availability
+\begin{equation}\label{eq:avail}
+   A \;=\; \frac{\mathrm{MTBF}}{\mathrm{MTBF}+\mathrm{MTTR}},
+   \qquad \mathrm{MTBF}=\frac{1}{\lambda}, \qquad U=1-A .
+\end{equation}
+
+\subsection{Fault tree representation}\label{ss:fta}
+
+Let $T$ denote the top event ``IT load lost'' at a particular site,
+and let $\{B_j\}_{j=1}^m$ denote the elementary events
+(component failures, human errors, exogenous shocks). A fault tree
+encodes $T$ as a Boolean function of $\{B_j\}$,
+\begin{equation}\label{eq:fta-bool}
+   T \;=\; \phi(B_1,\dots,B_m) .
+\end{equation}
+For a $2N$ topology the simplified structure is
+\begin{equation}\label{eq:topdown}
+   T \;\Leftrightarrow\;
+   \underbrace{(E_A \wedge E_B)}_{\text{both power trains}}
+   \;\vee\;
+   \underbrace{(C_A \wedge C_B)}_{\text{both cooling trains}}
+   \;\vee\;
+   \underbrace{F_{\mathrm{cat}}}_{\text{catastrophic peril}}
+   \;\vee\;
+   \underbrace{Y_{\mathrm{cy}}}_{\text{cyber lockdown}},
+\end{equation}
+where each $E_\bullet$ is itself a series chain (utility OR generator OR
+ATS OR transformer OR UPS OR PDU). Figure~\ref{fig:fta} shows the
+expanded tree.
+
+\begin{figure}[ht]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+   every node/.style={font=\footnotesize},
+   top/.style={draw,rectangle,rounded corners=2pt,fill=red!15,minimum width=4cm,
+               minimum height=0.6cm,align=center},
+   gate/.style={draw,ellipse,fill=yellow!15,minimum width=0.9cm,minimum height=0.45cm,
+                inner sep=2pt},
+   bevt/.style={draw,circle,fill=blue!8,minimum size=0.55cm,inner sep=1pt,align=center},
+   ievt/.style={draw,rectangle,rounded corners=1pt,fill=blue!4,minimum width=1.5cm,
+                minimum height=0.5cm,align=center},
+   ln/.style={thick}
+]
+% Top event
+\node[top] (T) at (0,0) {Top event $T$: IT load lost};
+\node[gate,below=0.4cm of T] (G0) {OR};
+\draw[ln] (T) -- (G0);
+
+% Four branches
+\node[ievt,below=0.55cm of G0,xshift=-5.0cm] (EA) {Power $E_A\wedge E_B$};
+\node[ievt,below=0.55cm of G0,xshift=-1.7cm] (CA) {Cool $C_A\wedge C_B$};
+\node[ievt,below=0.55cm of G0,xshift= 1.5cm] (FC) {Catastrophic $F_{\mathrm{cat}}$};
+\node[ievt,below=0.55cm of G0,xshift= 4.6cm] (CY) {Cyber $Y_{\mathrm{cy}}$};
+\draw[ln] (G0) -- (EA);
+\draw[ln] (G0) -- (CA);
+\draw[ln] (G0) -- (FC);
+\draw[ln] (G0) -- (CY);
+
+% Power AND
+\node[gate,below=0.35cm of EA] (G1) {AND};
+\draw[ln] (EA) -- (G1);
+\node[bevt,below=0.4cm of G1,xshift=-0.9cm] (EAfail) {$E_A$};
+\node[bevt,below=0.4cm of G1,xshift= 0.9cm] (EBfail) {$E_B$};
+\draw[ln] (G1) -- (EAfail);
+\draw[ln] (G1) -- (EBfail);
+
+% Cooling AND
+\node[gate,below=0.35cm of CA] (G2) {AND};
+\draw[ln] (CA) -- (G2);
+\node[bevt,below=0.4cm of G2,xshift=-0.9cm] (CAfail) {$C_A$};
+\node[bevt,below=0.4cm of G2,xshift= 0.9cm] (CBfail) {$C_B$};
+\draw[ln] (G2) -- (CAfail);
+\draw[ln] (G2) -- (CBfail);
+
+% Catastrophic OR
+\node[gate,below=0.35cm of FC] (G3) {OR};
+\draw[ln] (FC) -- (G3);
+\node[bevt,below=0.4cm of G3,xshift=-0.9cm] (FB) {Fire};
+\node[bevt,below=0.4cm of G3,xshift= 0.9cm] (NC) {NatCat};
+\draw[ln] (G3) -- (FB);
+\draw[ln] (G3) -- (NC);
+
+% Cyber leaf
+\node[bevt,below=0.55cm of CY] (CYb) {Cyber};
+\draw[ln] (CY) -- (CYb);
+
+\end{tikzpicture}%
+}
+\caption{Simplified fault tree for the top event $T=$ ``IT load lost.''
+Each $E_\bullet$ is itself a series chain of elementary component
+events (utility, generator, ATS, transformer, switchgear, UPS,
+STS, PDU); these are not expanded here for clarity. The four top-level
+branches are not independent --- a fire in the UPS room can simultaneously
+fail $E_A$ and trigger fire suppression that shuts cooling.}
+\label{fig:fta}
+\end{figure}
+
+\noindent For \emph{instantaneous} (steady-state) probabilities and
+\emph{rare}, independent component failures,
+\begin{equation}\label{eq:fta-prob}
+   \Prb(T) \;\approx\; \Prb(E_A)\Prb(E_B) + \Prb(C_A)\Prb(C_B)
+              + \Prb(F_{\mathrm{cat}}) + \Prb(Y_{\mathrm{cy}}),
+\end{equation}
+where each $\Prb(E_\bullet)=1-\prod_k (1-q_k)$ for the relevant series
+chain of unavailabilities $q_k$. The independence assumption is
+abandoned in \S\ref{sec:dependence}.
+
+\subsection{Markov chain of plant states}\label{ss:markov}
+
+A more dynamic representation is the continuous-time Markov chain
+$\{Z_t\}$ on
+\begin{equation}
+   \mathcal{S} = \{\,
+       \mathrm{OK},\;\mathrm{Deg}_1,\;\mathrm{Deg}_2,\;\mathrm{F}\,\},
+\end{equation}
+corresponding to (both trains healthy, one train down,
+both trains down on one subsystem, total failure). For a $2N$ site:
+
+\begin{figure}[ht]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=3.6cm and 4.0cm,
+  state/.style={draw,circle,minimum size=1.35cm,inner sep=1pt,
+                font=\small,fill=blue!5},
+  every edge/.style={draw,thick,->,>=Latex},
+  every node/.style={font=\footnotesize},
+  ratelbl/.style={midway,font=\footnotesize,inner sep=2pt,fill=white,
+                  fill opacity=0.85,text opacity=1}
+]
+\node[state]                                  (S0) {OK};
+\node[state,right=of S0,fill=yellow!18]       (S1) {Deg$_1$};
+\node[state,right=of S1,fill=orange!22]       (S2) {Deg$_2$};
+\node[state,right=of S2,fill=red!28]          (SF) {F};
+
+% Forward arrows bend upward (label above the upper arc); reverse arrows
+% bend left=28 in the leftward direction, which curves them downward, so
+% their label goes below the lower arc. Semi-opaque white background on
+% the labels keeps them legible even where they get close to an arc.
+\draw (S0) edge[bend left=28]  node[ratelbl,above] {$2\lambda$}                 (S1);
+\draw (S1) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S0);
+\draw (S1) edge[bend left=28]  node[ratelbl,above] {$\lambda$}                  (S2);
+\draw (S2) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S1);
+\draw (S2) edge[bend left=28]  node[ratelbl,above] {$\lambda_{\mathrm{f}}$}     (SF);
+\draw (SF) edge[bend left=28]  node[ratelbl,below] {$\mu_{\mathrm{r}}$}         (S2);
+\end{tikzpicture}%
+}
+\caption{Continuous-time Markov chain on plant states for a $2N$
+data center. $\lambda$: per-train degradation rate. $\mu$: per-train
+repair rate. $\lambda_{\mathrm{f}}$: degraded-to-failed rate, which is
+dramatically higher than $\lambda$ because the system has lost
+fault tolerance. $\mu_{\mathrm{r}}$: full-site restoration rate.}
+\label{fig:markov}
+\end{figure}
+
+\noindent The steady-state distribution $\bm{\pi}=(\pi_0,\pi_1,\pi_2,\pi_F)$
+solves $\bm\pi\, \mathbf{Q}=\mathbf{0}$, $\bm\pi\mathbf{1}=1$,
+where the generator is
+\begin{equation}\label{eq:Qmatrix}
+\mathbf{Q} =
+\begin{pmatrix}
+-2\lambda & 2\lambda  & 0                       & 0 \\
+\mu       & -(\mu+\lambda) & \lambda            & 0 \\
+0         & \mu       & -(\mu+\lambda_{\mathrm f}) & \lambda_{\mathrm f}\\
+0         & 0         & \mu_{\mathrm r}         & -\mu_{\mathrm r}
+\end{pmatrix} .
+\end{equation}
+The unavailability $U=\pi_F$ admits a closed-form expression that we
+can equate to $1-A$ from Table~\ref{tab:tier}; this calibration
+identifies the per-component $\lambda$ once $\mu$ and $\mu_{\mathrm r}$
+are fixed by site operating procedures.
+
+\begin{proposition}\label{prop:avail}
+For the chain in Figure~\ref{fig:markov} with $\lambda\ll\mu$, the
+steady-state unavailability satisfies, to leading order,
+\begin{equation}\label{eq:U-leading}
+   U \;\approx\; \frac{2\lambda^2 \lambda_{\mathrm f}}{\mu^2 \mu_{\mathrm r}}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}[Sketch]
+With $\lambda\ll\mu$, the chain is heavily attracted to OK. Standard
+results from \citet{Trivedi2017} give
+$\pi_1\approx 2\lambda/\mu$, $\pi_2\approx 2\lambda^2/\mu^2$,
+$\pi_F\approx 2\lambda^2 \lambda_{\mathrm f}/(\mu^2\mu_{\mathrm r})$.
+\end{proof}
+
+\noindent Equation~\eqref{eq:U-leading} is the bridge from electrical
+engineering specifications to actuarial frequency: ageing of any
+component drives $\lambda$ up multiplicatively, and the cube of those
+rates appears in $U$. The framework is exquisitely sensitive to
+component reliability --- exactly the underwriting result needed.
+
+\subsection{From availability to claim frequency}\label{ss:freq-from-A}
+
+If we declare a ``site outage event'' to be any visit by $\{Z_t\}$ to
+$\mathrm{F}$, the number of such visits in $[0,1]$ year is, in steady
+state, well-approximated by a Poisson process with intensity
+\begin{equation}\label{eq:freq-from-A}
+   \lambda^{\mathrm{out}} \;=\; \pi_2 \, \lambda_{\mathrm f}
+   \;\approx\; \frac{2\lambda^2 \lambda_{\mathrm f}}{\mu^2}\;
+   \text{per year}.
+\end{equation}
+This is our \emph{engineering-derived prior} on actuarial frequency. We
+will see in \S\ref{sec:freq} how to update it from empirical claims
+data.
+
+
+% ============================================================
+\section{The coupled power--thermal--cyber failure model}\label{sec:coupled}
+
+\subsection{State space and dynamics}
+
+The novelty of our framework is to treat the data center as a
+\emph{coupled multi-physics system} rather than as a collection of
+independent components. Let
+\begin{equation}\label{eq:state}
+   \mathbf{X}_t \;=\;
+   \bigl(V_t,\; T_t,\; C_t\bigr)^{\top}\in \R^3,
+\end{equation}
+where
+\begin{itemize}[leftmargin=*,nosep]
+  \item $V_t$: the prevailing per-unit bus voltage at the main LV
+        switchgear ($V_t\equiv 1$ in normal operation),
+  \item $T_t$: the cold-aisle return temperature deviation above setpoint
+        (\si{\kelvin}),
+  \item $C_t$: an abstract cyber-load process (e.g.\ rate of
+        intrusion attempts per second, log-transformed).
+\end{itemize}
+
+\noindent We posit the following stochastic differential equations:
+
+\begin{equation}\label{eq:sde}
+\boxed{
+\begin{aligned}
+   \dd V_t &= -\kappa_V\bigl(V_t-1\bigr)\,\dd t
+            + \sigma_V\,\dd W^{V}_t
+            - J^V_t\,\dd N^{V}_t , \\[2pt]
+   \dd T_t &= \alpha\,\bigl[g(V_t)\,P_{\mathrm{IT}}
+                            - q(\mathrm{PUE})\,c(V_t)\bigr]\dd t
+            + \sigma_T\,\dd W^{T}_t , \\[2pt]
+   \dd C_t &= \kappa_C\bigl(\bar c - C_t\bigr)\dd t + \sigma_C\,\dd W^{C}_t,
+\end{aligned}}
+\end{equation}
+with independent standard Brownian motions
+$(W^V,W^T,W^C)$ subject to the correlation
+$\dd W^{V}\dd W^{T}=\rho_{VT}\dd t$,
+$\dd W^{T}\dd W^{C}=\rho_{TC}\dd t$,
+$\dd W^{V}\dd W^{C}=\rho_{VC}\dd t$, all initialised at
+$\mathbf{X}_0=(1,0,\bar c)$, and where
+$N^V_t$ is a Poisson process counting upstream voltage-sag events with
+intensity $\beta_V$.
+
+\paragraph{Reading the model.}
+\begin{itemize}[leftmargin=*,nosep]
+  \item The voltage equation is an Ornstein--Uhlenbeck process pulled
+        back to nominal ($V=1$), perturbed by Gaussian small-signal noise
+        $\sigma_V \dd W^V$ and discrete sag-jumps $J^V_t$ of random size at
+        rate $\beta_V$. Real SCADA voltage traces are well-modelled in
+        this form.
+  \item In the thermal equation, the function
+        $g(v)=1\!\!\1_{\{v>v_{\min}\}}$ acts as a binary indicator that
+        IT continues to draw rated power above the UPS dropout
+        threshold $v_{\min}$, while $c(v)$ is the cooling-system
+        capacity which collapses below the same threshold (cooling
+        plant pulled off-grid).
+        The parameter $q(\mathrm{PUE})=(\mathrm{PUE}-1)\,P_{\mathrm{IT}}$
+        converts the facility overhead into reject heat. $\alpha$ is
+        the lumped thermal capacitance of the white space.
+  \item The cyber-load equation is again Ornstein--Uhlenbeck, capturing
+        the noisy background of intrusion attempts. Spikes are
+        modelled via a separately-counted compound Poisson process below.
+\end{itemize}
+
+\subsection{Coupled instantaneous failure hazard}
+
+The instantaneous hazard rate that the IT critical load is lost in
+the next time-step combines three accelerative effects:
+\begin{equation}\label{eq:hazard}
+   \boxed{\;
+   \lambda_t \;=\; \underbrace{\lambda_0\, e^{-E_a/k_B T_t}}_{\text{Arrhenius thermal}}
+   \cdot \underbrace{\bigl(\tfrac{V_t}{V_{\mathrm{nom}}}\bigr)^{-\gamma_V}}_{\text{voltage-stress}}
+   \cdot \underbrace{\exp(\beta_C\,C_t)}_{\text{cyber-stress}} .\;}
+\end{equation}
+The Arrhenius factor comes from the standard semiconductor reliability
+acceleration model: $E_a$ is an effective activation energy (typically
+$0.6\,$--$\,0.9$\,eV for IC failures), $k_B$ is Boltzmann's constant.
+A $\Delta T=\SI{10}{\kelvin}$ rise above setpoint roughly halves
+component MTBF~\citep{Black1969}, which is the headline industrial
+``10\,°C rule.''
+
+The voltage-stress factor reflects accelerated insulation ageing
+with $\gamma_V\in[3,7]$ for liquid-filled transformers under the
+Arrhenius--inverse-power-law (AIPL) model.
+
+The cyber-stress factor is the cleanest novelty: an Esscher-style
+exponential tilt of the baseline rate by the prevailing cyber-load.
+
+\subsection{Catastrophic transitions as first-hitting times}
+
+A subset of catastrophic events are best modelled not as smooth
+hazard increases but as the first time a state variable crosses a
+critical boundary.
+
+\begin{definition}[Thermal runaway hitting time]\label{def:hit}
+Define the thermal runaway barrier
+$T^* = T_{\mathrm{runaway}}-T_{\mathrm{setpoint}}$, e.g.\
+$T^*\approx \SI{40}{\kelvin}$ for Li-ion NMC chemistry. The thermal
+runaway hitting time is
+\begin{equation}\label{eq:hitting}
+   \tau^* \;=\; \inf\{\,t>0 : T_t \geq T^*\,\}.
+\end{equation}
+\end{definition}
+
+For the thermal SDE in~\eqref{eq:sde} the distribution of $\tau^*$
+solves the Kolmogorov backward equation; under mean-reverting drift it
+is well-approximated by an inverse-Gaussian distribution
+\citep{Chhikara1989}:
+\begin{equation}\label{eq:IG}
+   \tau^* \sim \mathrm{IG}(\mu_{\tau},\,\lambda_{\tau}),\qquad
+   f_{\tau^*}(t) \;=\;
+   \sqrt{\tfrac{\lambda_{\tau}}{2\pi t^{3}}}\,
+   \exp\!\left\{-\tfrac{\lambda_{\tau}(t-\mu_{\tau})^2}{2\mu_{\tau}^2 t}\right\},
+\end{equation}
+with mean $\mu_\tau=T^*/\alpha\,\E[\text{net heat in}]$ and shape
+$\lambda_\tau$ identified from $\sigma_T$ and the boundary distance.
+
+\subsection{Deterministic limit: the operator's grace period}
+\label{ss:tcrit}
+
+The stochastic first-hitting characterisation has a clean
+deterministic counterpart that engineers reach for first and that
+operators actually use in pre-incident drills. Setting $\sigma_T\!\to\! 0$
+and $V_t\equiv 1$ in~\eqref{eq:sde} reduces the thermal equation
+to the lumped-capacitance heat balance
+\begin{equation}\label{eq:lumped}
+   m\,c_p\,\frac{\dd T(t)}{\dd t}
+   \;=\; Q_{\mathrm{IT}} \;-\; UA\,\bigl(T(t)-T_{\mathrm{amb}}\bigr),
+\end{equation}
+where $m$ (kg) and $c_p$ (J\,kg$^{-1}$K$^{-1}$) are the lumped mass
+and specific heat of air and structure in the white space, $UA$
+(W\,K$^{-1}$) is the lumped envelope conductance, $Q_{\mathrm{IT}}=P_{\mathrm{IT}}$
+is the IT reject heat and $T_{\mathrm{amb}}$ is the ambient outdoor
+temperature. Equation~\eqref{eq:lumped} is a linear first-order ODE
+with closed-form solution
+\begin{equation}\label{eq:Tt}
+   T(t) \;=\; \underbrace{T_{\mathrm{amb}}+\tfrac{Q_{\mathrm{IT}}}{UA}}_{T_\infty}
+   \;+\;\Bigl(T_0-T_{\mathrm{amb}}-\tfrac{Q_{\mathrm{IT}}}{UA}\Bigr)\,
+   \exp\!\Bigl(-\tfrac{UA}{m c_p}\,t\Bigr).
+\end{equation}
+Note that for a typical hyperscale hall in cooling-failure mode,
+$Q_{\mathrm{IT}}/UA$ is far above any safe room temperature: cooling
+\emph{must} resume before the asymptote $T_\infty$ is approached.
+Solving~\eqref{eq:Tt} for the first time $T$ reaches the ASHRAE A1
+operating limit $T_{\mathrm{crit}}$ (\SI{32}{\celsius} for general use)
+gives the \textbf{deterministic grace period}
+\begin{equation}\label{eq:tcrit}
+   \boxed{\;
+   t_{\mathrm{crit}} \;=\; -\,\frac{m c_p}{UA}\,
+   \ln\!\left(
+     \frac{T_{\mathrm{crit}}-T_{\mathrm{amb}}-Q_{\mathrm{IT}}/UA}
+          {T_0-T_{\mathrm{amb}}-Q_{\mathrm{IT}}/UA}
+   \right).\;}
+\end{equation}
+The stochastic counterpart $\tau^*$ from \eqref{eq:hitting}--\eqref{eq:IG}
+is well-approximated by a distribution centred at $t_{\mathrm{crit}}$
+with dispersion driven by $\sigma_T$.
+
+\begin{rbox}
+For a typical \SI{20}{\mega\watt} IT hall ($Q_{\mathrm{IT}}=\SI{20}{MW}$),
+$m c_p \approx 3.5\times 10^{6}$\,J/K, $UA\approx 10^{4}$\,W/K,
+$T_0=\SI{22}{\celsius}$, $T_{\mathrm{amb}}=\SI{30}{\celsius}$,
+$T_{\mathrm{crit}}=\SI{32}{\celsius}$, \eqref{eq:tcrit} gives
+$t_{\mathrm{crit}}\approx 3.5\,\mathrm{minutes}$. This is the
+engineering reality that drives the $24/7$ rotation of redundant
+chillers, and the actuarial reality that even Tier-IV sites with
+\SI{15}{minute} battery autonomy are running closer to the cooling
+boundary than to the power boundary.
+\end{rbox}
+
+\begin{nbox}
+\textbf{Why this matters.} Treating thermal runaway as a first-hitting
+time means the protective effect of \emph{off-gas detection} (which
+shifts the boundary $T^*$ effectively to a lower temperature $T^*_\mathrm{eff}$
+because mitigation can be applied earlier) enters the model
+\emph{multiplicatively in the hazard}, not additively in the loss.
+This explains why off-gas detection retrofits have been observed to
+move site-level loss costs by 40--60\,\%, far more than a naive
+reduction-in-frequency calculation predicts: the lengthened tail of
+$\tau^*$ removes precisely the most extreme right tail of the loss
+distribution.
+\end{nbox}
+
+% ============================================================
+\section{Frequency modelling}\label{sec:freq}
+
+\subsection{Annual count of insurable outages}
+
+Let $N_i$ be the number of outage events at site $i$ in a policy
+year. The naïve actuarial benchmark is the homogeneous Poisson
+\begin{equation}\label{eq:Poi}
+   N_i \,\sim\, \mathrm{Poisson}(\lambda_i),\qquad
+   \E[N_i]=\Var(N_i)=\lambda_i .
+\end{equation}
+Empirical experience with multi-site portfolios overwhelmingly
+shows over-dispersion ($\Var/\E\!>\!1$), driven by site
+heterogeneity in operational maturity, climate exposure and
+equipment age. We therefore adopt a \textbf{Poisson--Gamma frailty}
+mixed model:
+\begin{equation}\label{eq:NB}
+   N_i \given \Theta_i \,\sim\, \mathrm{Poisson}(\lambda_i \Theta_i),
+   \qquad \Theta_i \stackrel{\mathrm{iid}}{\sim} \mathrm{Gamma}(\nu,\nu),
+\end{equation}
+which marginally yields a Negative Binomial
+$N_i\sim\mathrm{NB}\bigl(\nu,\,\nu/(\nu+\lambda_i)\bigr)$ with
+\begin{equation}
+   \E[N_i]=\lambda_i,\qquad
+   \Var(N_i)=\lambda_i\bigl(1+\lambda_i/\nu\bigr).
+\end{equation}
+
+\subsection{The frequency regression}\label{ss:freq-reg}
+
+The site-specific rate $\lambda_i$ is parameterised log-linearly in
+underwriting covariates:
+\begin{equation}\label{eq:GLM}
+   \log \lambda_i \;=\; \beta_0
+   + \beta_1 \log P_{\mathrm{IT},i}
+   + \beta_2 \,\bigl(\mathrm{PUE}_i - 1\bigr)
+   + \beta_3 \,\mathrm{Age}_i
+   + \beta_4 \,\1\{\mathrm{Tier}<\mathrm{IV}\}_i
+   + \beta_5 \,\mathrm{ClimateScore}_i .
+\end{equation}
+The coefficient on PUE deserves attention: \emph{higher PUE means more
+of the energy budget is lost to mechanical and electrical overhead}.
+Empirically this co-varies with cooling stress and with lower-quality
+equipment. We expect $\beta_2 > 0$. The IT-load coefficient absorbs
+the simple intuition that bigger sites have more components and
+therefore more failure opportunities, but \emph{economies of redundancy}
+typically push $\beta_1 < 1$.
+
+\subsection{Engineering prior, statistical posterior}
+
+Equation~\eqref{eq:freq-from-A} gives the engineering prior
+$\lambda_i^{\mathrm{out},\mathrm{eng}}$ from the Tier-class
+availability. In a Bayesian setting, we treat it as the prior mean and
+update with claims experience $\mathbf{D}_i=\{n_{i,t},t=1,\dots,T\}$:
+\begin{equation}\label{eq:bayes}
+   \pi(\lambda_i \given \mathbf{D}_i)
+   \;\propto\; \pi(\lambda_i)\,\prod_{t=1}^{T}
+   \frac{(\lambda_i)^{n_{i,t}} e^{-\lambda_i}}{n_{i,t}!} .
+\end{equation}
+If the prior is Gamma, this is conjugate and gives a closed-form
+posterior. This is precisely the \emph{credibility} framework of
+B\"uhlmann--Straub, with the engineering prior playing the role of
+the collateral information.
+
+\clearpage
+\begin{rbox}
+\textbf{Cox/doubly-stochastic structure.} The Poisson--Gamma frailty
+in~\eqref{eq:NB} is precisely a \emph{doubly stochastic} (Cox) Poisson
+process: the intensity $\lambda_i\Theta_i$ is itself random, drawn at
+the site level. If we let the intensity depend on time-varying
+covariates such as $T_{\mathrm{amb}}(t)$, the model generalises naturally to
+\begin{equation*}
+   \lambda_i(t) \;=\; \lambda_i \cdot
+   \exp\!\bigl(\gamma_1 \max(0,T_{\mathrm{amb}}(t)-T_{\mathrm{design}})
+              + \gamma_2 \1_{\{Z_t=\mathrm{Deg}_2\}}\bigr),
+\end{equation*}
+which couples the actuarial frequency directly to the Markov chain
+state of \S\ref{ss:markov} and to a meteorological covariate. The
+unconditional claim count is then a Cox process whose intensity
+inherits the dynamics of both the plant and the weather.
+\end{rbox}
+
+% ============================================================
+\section{Severity modelling and the tail}\label{sec:severity}
+
+\subsection{Compound aggregate loss}
+
+Total annual loss for site $i$ is the compound random variable
+\begin{equation}\label{eq:S}
+   S_i \;=\; \sum_{j=1}^{N_i} X_{i,j},\qquad
+   X_{i,j}\stackrel{\mathrm{iid}}{\sim}F_X.
+\end{equation}
+Both the mean and variance of $S_i$ are given by
+Wald's identities:
+\begin{align}
+   \E[S_i] &= \E[N_i]\,\E[X],\\
+   \Var(S_i) &= \E[N_i]\,\Var(X) + \Var(N_i)\,\E[X]^2.
+\end{align}
+For the NB frequency assumption, the second identity becomes
+\begin{equation}\label{eq:varS-NB}
+   \Var(S_i) \;=\; \lambda_i\,\E[X^2] +
+                  \frac{\lambda_i^2}{\nu}\,\E[X]^2 ,
+\end{equation}
+making explicit how frailty inflates the variance over the Poisson case.
+
+\subsection{Body--tail severity decomposition}
+
+The severity distribution $F_X$ has a markedly bimodal character:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Attritional losses} (PDU failures, single rack burns,
+        short cooling excursions) cluster around \$100k--\$5M and
+        fit a lognormal body very well.
+  \item \textbf{Catastrophic losses} (full-site fire, total power
+        train loss, lithium-ion cascading event) are heavy-tailed and
+        follow a power law.
+\end{itemize}
+We adopt a \emph{Peaks-over-Threshold} (POT) decomposition: choose a
+threshold $u$ (e.g.\ the 95th percentile of historical claims), and model
+\begin{equation}\label{eq:POT}
+   F_X(x) \;=\;
+   \begin{cases}
+      F_{\mathrm{body}}(x), & x < u, \\[3pt]
+      1 - (1-F_X(u))\Bigl[1 + \xi\dfrac{x-u}{\sigma}\Bigr]^{-1/\xi}, & x \geq u .
+   \end{cases}
+\end{equation}
+The tail is a Generalised Pareto with shape $\xi$ and scale
+$\sigma$, justified by the Pickands--Balkema--de~Haan theorem
+\citep{Balkema1974,Pickands1975}: for any distribution in the maximum
+domain of attraction of an extreme value distribution, exceedances
+above a high enough threshold converge to a GPD. Maximum-likelihood
+estimates of $\xi$ for data-center catastrophic losses are typically
+in the $\xi\in(0.2,0.6)$ range --- meaningfully heavy-tailed.
+
+\subsection{Probable Maximum Loss and Maximum Foreseeable Loss}
+
+Lenders and reinsurers reference two engineering loss metrics adapted
+to data centers:
+\begin{align}
+   \mathrm{PML}_\alpha &\;=\; \VaR_\alpha(X\given X>u)
+   \;=\; u + \frac{\sigma}{\xi}
+        \Bigl[\bigl(\tfrac{1-\alpha}{p_u}\bigr)^{-\xi}-1\Bigr], \label{eq:PML}\\
+   \mathrm{MFL}      &\;=\; \text{deterministic worst credible loss assuming all controls fail.}
+\end{align}
+For a $\xi=0.4$, $\sigma=\$50M$, $u=\$10M$ tail and $\alpha=99.5\%$
+with $p_u=0.05$, the PML works out to about \$870M --- consistent with
+broker estimates for a \SI{100}{\mega\watt} Tier-III site.
+
+\subsection{Operationalising BI severity via SLA structure}
+\label{ss:BI-SLA}
+
+The pure-statistical severity above tells us \emph{how big} a loss is
+but says nothing about \emph{why}. For data center operators, the
+loss decomposition~\eqref{eq:loss-decomp} contains an item
+$L^{(i)}_{\mathrm{BI}}$ whose magnitude is governed by an SLA contract
+between the operator and its tenants. A single outage of length
+$\tau$ generates a piecewise BI loss
+\begin{equation}\label{eq:BI-piece}
+   \boxed{\;
+   X^{\mathrm{BI}}(\tau) \;=\;
+   C_{\mathrm{SLA}}\,\max\!\bigl(0,\,\tau-\tau_0\bigr)
+   \;+\; \kappa\,\1\{\tau > t_{\mathrm{crit}}\}
+   \;+\; \rho_{\mathrm{churn}}\,\tau^2 \,,\;}
+\end{equation}
+with the interpretation
+\begin{itemize}[leftmargin=*,nosep]
+  \item $\tau_0$: the SLA-permitted deductible window
+        (e.g.\ ``five nines'' $\Rightarrow \tau_0\approx 5.26$\,min/yr).
+  \item $C_{\mathrm{SLA}}$: contractual penalty rate per unit downtime
+        above $\tau_0$ (US\$/min). Most colocation contracts set
+        $C_{\mathrm{SLA}}$ to one to three monthly recurring revenue (MRR)
+        equivalents per cumulative downtime quarter, with caps.
+  \item $\kappa$: a step penalty triggered the moment downtime exceeds
+        the thermodynamic grace period $t_{\mathrm{crit}}$ derived in
+        \eqref{eq:tcrit}; this is where ``customers start migrating''
+        in real-world incident accounts.
+  \item $\rho_{\mathrm{churn}}\,\tau^2$: a quadratic churn term
+        capturing the empirical fact that the marginal customer-loss
+        rate grows with downtime, not stays flat.
+\end{itemize}
+
+\noindent The BI duration $\tau$ itself is well-modelled as
+lognormal, $\ln\tau\sim\mathcal{N}(\mu_\tau,\sigma_\tau^2)$, calibrated
+from MTTR experience. Combining with~\eqref{eq:BI-piece} and integrating
+out $\tau$ gives a closed-form $\E[X^{\mathrm{BI}}]$ in terms of the
+lognormal CDF $\Phi$, useful for fast quotation:
+\begin{equation}\label{eq:BI-mean}
+\begin{aligned}
+   \E[X^{\mathrm{BI}}] \;=\;{}&
+   C_{\mathrm{SLA}}\bigl[\,e^{\mu_\tau+\sigma_\tau^2/2}\bar\Phi(z_0)
+     - \tau_0\,\bar\Phi(z_0')\,\bigr] \\[2pt]
+   &+\;\kappa\,\bar\Phi(z_{\mathrm{crit}}')
+   \;+\;\rho_{\mathrm{churn}}\,e^{2\mu_\tau+2\sigma_\tau^2},
+\end{aligned}
+\end{equation}
+with $z_0=(\ln\tau_0-\mu_\tau-\sigma_\tau^2)/\sigma_\tau$, primed
+versions at $\sigma_\tau^2=0$, and $\bar\Phi=1-\Phi$. The actuarial
+contribution of the $\kappa$ term is highly non-linear in
+$t_{\mathrm{crit}}$, which links underwriting directly to the
+engineering parameters $m c_p$ and $UA$ from~\eqref{eq:tcrit}.
+
+% ============================================================
+\section{Cyber--physical dependence via copula}\label{sec:dependence}
+
+\subsection{Why independence fails}
+
+Cyber incidents and physical failures are not independent. Three
+empirical mechanisms link them: (i) a successful intrusion of the
+Building Management System can deliberately mis-set cooling
+controls; (ii) physical events (a fire, a flood) often disable
+cyber-defence appliances along with everything else; (iii) major
+cyber-events and major physical events both correlate with
+operational human-factor stress (peak utilisation, contractor
+activity).
+
+\subsection{Gaussian copula linkage}
+
+Let $S^{\mathrm{phy}}_i$ and $S^{\mathrm{cy}}_i$ be the marginal annual
+loss aggregates from physical and cyber peril streams, with marginal
+CDFs $F^{\mathrm{phy}}$ and $F^{\mathrm{cy}}$. We link them via a
+bivariate Gaussian copula:
+\begin{equation}\label{eq:copula}
+   C_\rho(u_1,u_2) \;=\; \Phi_2\bigl(\Phi^{-1}(u_1),\Phi^{-1}(u_2);\rho\bigr),
+\end{equation}
+so that the joint distribution is
+\begin{equation}
+   F(s_1,s_2) \;=\; C_\rho\bigl(F^{\mathrm{phy}}(s_1),\,F^{\mathrm{cy}}(s_2)\bigr).
+\end{equation}
+The total site loss is then $S_i = S^{\mathrm{phy}}_i + S^{\mathrm{cy}}_i$,
+with variance
+\begin{equation}\label{eq:totalvar}
+   \Var(S_i) \;=\; \Var(S^{\mathrm{phy}}_i) + \Var(S^{\mathrm{cy}}_i)
+                 + 2\rho\sqrt{\Var(S^{\mathrm{phy}}_i)\Var(S^{\mathrm{cy}}_i)} .
+\end{equation}
+
+\begin{rbox}
+The Gaussian copula is a starting point but is asymptotically tail
+\emph{independent}, which means it understates joint extremes. For the
+tail layer of a reinsurance treaty, a t-copula with low degrees of
+freedom (e.g.\ $\nu=4$) or a Gumbel copula is preferable. The
+calibration data are scarce; expert elicitation of
+$\tau_{\mathrm{Kendall}}=0.15$--$0.25$ is a reasonable industry prior.
+\end{rbox}
+
+\subsection{Gumbel copula for the tail layer}\label{ss:gumbel}
+
+The Gaussian-copula tail-independence defect is repaired with an
+Archimedean Gumbel copula
+\begin{equation}\label{eq:gumbel}
+   C_\theta(u_1,u_2) \;=\;
+   \exp\!\left\{-\bigl[(-\ln u_1)^{\theta} + (-\ln u_2)^{\theta}\bigr]^{1/\theta}\right\},
+   \qquad \theta \ge 1,
+\end{equation}
+where $\theta=1$ recovers independence and $\theta\to\infty$ yields
+perfect comonotonicity. The Gumbel admits asymptotic upper tail
+dependence
+\begin{equation}\label{eq:lambdaU}
+   \lambda_U \;=\; \lim_{u\uparrow 1}
+   \Prb\bigl(U_2>u\given U_1>u\bigr)
+   \;=\; 2 - 2^{1/\theta}\,,
+\end{equation}
+so that $\theta=1.5$ yields $\lambda_U\approx 0.41$ and $\theta=3$
+yields $\lambda_U\approx 0.74$. Kendall's $\tau$ is related to
+$\theta$ by the closed form $\tau_K = 1 - 1/\theta$, which is how the
+expert prior $\tau_K\in(0.15,0.25)$ translates into
+$\theta\in(1.18,1.33)$, hence $\lambda_U\in(0.20,0.31)$ ---
+a substantial joint-tail probability that the Gaussian copula assigns
+the value zero. The Gumbel is therefore our recommended choice for
+layers attaching at the 1-in-50 level and above, with the Gaussian
+retained for the attritional layer where the bulk of the data lives.
+
+% ============================================================
+\section{Pricing}\label{sec:pricing}
+
+\subsection{Surplus process and the Cram\'er--Lundberg framing}
+\label{ss:surplus}
+
+Before computing premiums it is useful to fix the underlying surplus
+dynamics. For a portfolio absorbing the aggregate loss
+$S(t)=\sum_{j=1}^{N(t)}X_j$ at rate set by the Cox intensity of
+\S\ref{sec:freq}, the insurer's surplus evolves as
+\begin{equation}\label{eq:CL}
+   U(t) \;=\; u_0 \;+\; \Pi\,t \;-\; S(t),
+\end{equation}
+where $u_0$ is initial capital and $\Pi$ is the constant premium rate.
+The probability of ultimate ruin
+$\psi(u_0)=\Prb\bigl(\inf_{t\ge 0}U(t)<0\bigr)$ is bounded above by
+Lundberg's inequality $\psi(u_0)\le e^{-Ru_0}$ for the adjustment
+coefficient $R$ solving $\E[e^{R X}]=1+\Pi R/\lambda$. In the
+data-center context, $R$ is small (heavy-tailed $X$) and Lundberg's
+bound is loose, which is precisely why we move to the variance- and
+tail-based loading principles below rather than rely on classical ruin
+theory.
+
+\subsection{The pure premium}
+
+The pure (or risk) premium per site per year is
+\begin{equation}\label{eq:pure}
+   P^{\mathrm{pure}}_i \;=\; \E[S_i]
+   \;=\; \E[N_i]\cdot\E[X]
+   \;=\; \lambda_i\,\E[X] .
+\end{equation}
+For sites in a portfolio $\mathcal{I}$, the portfolio pure premium is
+$\sum_i P^{\mathrm{pure}}_i$.
+
+\subsection{Risk loading principles}\label{ss:loadings}
+
+A pure premium does not compensate the insurer for taking on the
+volatility around $\E[S_i]$. The technical premium adds a
+\emph{risk load} $\Pi_{\mathrm{load}}$. We present four widely used
+principles and their interpretation:
+
+\paragraph{Standard deviation principle.}
+\begin{equation}\label{eq:sdp}
+   P^{\mathrm{SD}}_i \;=\; \E[S_i] + \theta\,\mathrm{SD}(S_i),
+   \qquad \theta>0.
+\end{equation}
+Simple, but does not distinguish upside from downside.
+
+\paragraph{Variance principle.}
+\begin{equation}\label{eq:vp}
+   P^{\mathrm{V}}_i \;=\; \E[S_i] + a\,\Var(S_i),\qquad a>0,
+\end{equation}
+which penalises portfolios with heavy tails more aggressively.
+
+\paragraph{Esscher transform.}
+For a parameter $h>0$,
+\begin{equation}\label{eq:esscher}
+   P^{\mathrm{E}}_i \;=\;
+   \frac{\E[\,S_i\,e^{h S_i}]}{\E[\,e^{h S_i}]}.
+\end{equation}
+The Esscher principle has the appealing property of being additive on
+independent risks and corresponds to a change-of-measure construction
+naturally arising in financial mathematics.
+
+\paragraph{Wang transform.}
+The Wang transform~\citep{Wang2000} adjusts the survival function
+$\bar F_S(s)=1-F_S(s)$ via
+\begin{equation}\label{eq:wang}
+   \bar F^{*}_S(s) \;=\; \Phi\bigl(\Phi^{-1}\!\bigl(\bar F_S(s)\bigr) + \lambda^*\bigr),
+\end{equation}
+and prices by $P^{\mathrm{W}}_i=\int_0^\infty \bar F^{*}_{S_i}(s)\dd s$.
+The Wang transform produces the same prices as CAPM in the normal
+case and the same prices as Black--Scholes for log-normal payoffs ---
+making it the natural choice for hybrid insurance/capital-markets
+structures (cat bonds, ILS) that are likely to absorb data center
+peak-layer risk over time.
+
+\subsection{Loading the data-center book}
+
+We propose a hybrid loading:
+\begin{equation}\label{eq:final}
+   \boxed{\;
+   P^{\mathrm{tech}}_i \;=\; \E[S_i]
+   \;+\; \theta_1 \mathrm{SD}(S^{\mathrm{attr}}_i)
+   \;+\; \theta_2 \bigl[\TVaR_{0.995}(S^{\mathrm{cat}}_i)-\E[S^{\mathrm{cat}}_i]\bigr] ,\;}
+\end{equation}
+splitting the attritional layer (low $\theta_1\approx 0.3$ standard
+deviation load) from the catastrophic layer (high $\theta_2\approx 0.15$
+Tail-VaR-based load). This mirrors the actual reinsurance market's
+treatment.
+
+% ============================================================
+\section{Hybrid indemnity--parametric product}\label{sec:product}
+
+\subsection{Trigger architecture}
+
+Pure indemnity products on data centers are slow to settle (complex
+forensics on equipment), inflate basis between sites, and bake in
+ex-post adversarial information asymmetry. Pure parametric products
+remove these frictions but introduce basis risk. We propose a
+\textbf{three-layer hybrid}:
+
+\smallskip
+\begin{tcolorbox}[colback=blue!4,colframe=blue!55!black,title=Hybrid product]
+\begin{description}
+  \item[Layer 1 (parametric, fast).] Triggered automatically by SCADA
+        measurements of $T_t$, $V_t$ exceeding pre-agreed thresholds
+        for pre-agreed durations. Settled in days.
+  \item[Layer 2 (parametric, cyber-trigger).] Triggered by detection
+        of cloud outage or measured downtime of named SaaS/PaaS/IaaS
+        services exceeding a threshold, as already implemented by
+        Parametrix~\citep{Parametrix2022}.
+  \item[Layer 3 (indemnity).] Catastrophic property/BI/SLA layer for
+        residual basis. Slower, larger limits, and reinsured via
+        excess-of-loss treaties.
+\end{description}
+\end{tcolorbox}
+
+\subsection{Basis risk decomposition}
+
+For Layer~1, basis risk is measured by
+\begin{equation}\label{eq:basis}
+   \mathrm{BR}_i \;=\;
+   \E\!\left[\,\bigl(L^{\mathrm{actual}}_i - L^{\mathrm{param}}_i\bigr)^2\right],
+\end{equation}
+which can be decomposed as
+\begin{equation}\label{eq:basis2}
+   \mathrm{BR}_i \;=\;
+   \underbrace{\Var\bigl(L^{\mathrm{actual}}_i\bigr)}_{\text{intrinsic}}
+   \,(1-R^2_{\mathrm{param},\mathrm{actual}}),
+\end{equation}
+i.e.\ the proportion of loss variance not explained by the parametric
+trigger. Modern SCADA telemetry routinely achieves $R^2 > 0.85$ for
+power/cooling failures, but $R^2 < 0.4$ for cyber-induced losses.
+This explains why parametric \emph{cyber} cover is harder to design
+than parametric \emph{power} cover.
+
+% ============================================================
+\section{Worked example: pricing a 200~MW hyperscale site}\label{sec:example}
+
+\begin{ebox}
+We price a fictional but representative \SI{200}{\mega\watt} critical
+IT load, Tier-IV $2N$, AI-training-dominated hyperscale campus in
+Northern Virginia.
+
+\paragraph{Inputs.}
+\begin{itemize}[nosep,leftmargin=*]
+  \item Total Insured Value (TIV): \$8\,bn.
+  \item Engineering prior availability $A=99.995\%$, hence implied
+        site-outage rate from~\eqref{eq:U-leading}:
+        $\lambda^{\mathrm{out}}_{\mathrm{eng}}\approx 0.05$ events / yr.
+  \item NB frailty parameter $\nu = 3$ (moderate over-dispersion).
+  \item Severity: lognormal body with $\mu_{\ln X}=14.0$,
+        $\sigma_{\ln X}=1.4$ (\textit{i.e.}\ median loss
+        $\approx\$1.2M$, mean $\approx\$3.2M$).
+  \item Tail: GPD with $\xi=0.4$, $\sigma=\$60M$ above threshold $u=\$20M$;
+        tail probability $p_u=0.04$.
+  \item Cyber--physical Kendall's $\tau=0.20$, hence Gaussian
+        copula $\rho=\sin(\pi\tau/2)\approx 0.31$.
+\end{itemize}
+
+\paragraph{Frequency.}
+$\lambda_i\approx 0.05$. With NB($\nu=3$),
+$\Var(N_i)=0.05(1+0.05/3)\approx 0.0508$. Annual probability of
+\emph{any} outage is $1-(1+\lambda_i/\nu)^{-\nu}\approx 4.92\%$.
+
+\paragraph{Severity moments.}
+Body mean $\E[X^{\mathrm{body}}]=e^{14.0+1.4^2/2}\approx \$3.2M$.
+Tail conditional mean $\E[X\given X>u]=u+\sigma/(1-\xi)=\$20M+\$60M/0.6=\$120M$.
+Unconditional mean
+$\E[X]=(1-p_u)\E[X^{\mathrm{body}}]+p_u\E[X^{\mathrm{tail}}]\approx
+0.96\cdot\$3.2M+0.04\cdot\$120M\approx\$7.9M$.
+
+\paragraph{Pure premium.}
+$P^{\mathrm{pure}}_i=\lambda_i\E[X]\approx 0.05\cdot\$7.9M=\$395k$.
+
+\paragraph{Risk-loaded technical premium.}
+Standard-deviation load on attritional ($\theta_1=0.3$):
+$\$118k$. Tail load on catastrophic via
+$\TVaR_{0.995}-\E$: with $\xi=0.4$, $\sigma=\$60M$ the TVaR is
+$\$315M$, hence the per-site load
+($\theta_2=0.15$) is $\approx \$240k$.
+\textbf{Technical premium $\approx \$753k$} or
+$\approx 9.4$\,bps on the TIV. This is in the bottom of the
+$5$--$20$\,bps band quoted by brokers for top-tier hyperscale
+operational property programmes, before commission and reinsurance loads.
+
+\paragraph{Solvency~II SCR contribution.}
+For a single site this contributes (in standard formula terms)
+$\TVaR_{0.995}(S_i)\approx \$315M$ of one-year aggregate loss,
+diversifying across $K$ uncorrelated sites by $\sqrt{K}$ in the
+property module. A book of 25 such sites with
+$\bar\rho_{\mathrm{site}}=0.1$ requires capital of order
+$\$0.5$\,bn for the data-center sub-module --- still tractable for
+a major reinsurer.
+\end{ebox}
+
+% ============================================================
+\section{Capital and reinsurance structure}\label{sec:capital}
+
+\subsection{Per-risk excess-of-loss (XoL)}
+
+For an individual site, a per-risk XoL treaty with retention
+$d$ and limit $\ell$ cedes to the reinsurer the layer $[d, d+\ell]$
+per claim:
+\begin{equation}\label{eq:xol}
+   X^{\mathrm{ced}}_{j} \;=\; \min\bigl(\max(X_j-d, 0),\,\ell\bigr).
+\end{equation}
+The ceded annual loss is
+$S^{\mathrm{ced}}=\sum_{j=1}^N X^{\mathrm{ced}}_j$
+and its expected value is, with severity CDF $F_X$,
+\begin{equation}\label{eq:xol-mean}
+   \E[S^{\mathrm{ced}}] \;=\; \lambda \int_d^{d+\ell}
+   \bigl(1-F_X(x)\bigr)\dd x .
+\end{equation}
+For the GPD tail this integral is in closed form:
+\begin{equation}
+   \int_d^{d+\ell}\Bigl[1+\xi\tfrac{x-u}{\sigma}\Bigr]^{-1/\xi}\dd x
+   = \frac{\sigma}{1-\xi}
+     \Bigl\{\bigl[1+\xi\tfrac{d-u}{\sigma}\bigr]^{1-1/\xi}
+           -\bigl[1+\xi\tfrac{d+\ell-u}{\sigma}\bigr]^{1-1/\xi}\Bigr\}.
+\end{equation}
+
+\subsection{Aggregate stop-loss and cat bond carve-out}
+
+For book-level catastrophe protection, a stop-loss on annual aggregate
+$\,S^{\mathrm{port}}=\sum_i S_i\,$ above attachment $A$ and below
+exhaustion $A+L$ cedes
+\begin{equation}\label{eq:stoploss}
+   S^{\mathrm{SL}} \;=\; \min\bigl(\max(S^{\mathrm{port}} - A,\,0),\,L\bigr).
+\end{equation}
+Pricing requires the portfolio aggregate distribution, generated via
+Monte Carlo from the model in
+Sections~\ref{sec:freq}--\ref{sec:dependence}.
+
+For the largest layers ($\$1$\,bn and above per occurrence) we
+anticipate, as already occurred in nat-cat, that the market will move
+toward \textbf{144A catastrophe bonds} with parametric triggers tied
+to power-grid status, on-site PMS telemetry, and named-storm tracks.
+
+% ============================================================
+
+% ============================================================
+\input{econ_section}
+
+% ============================================================
+\section{A pgfplots view: hazard rate vs.\ cold-aisle temperature}\label{sec:plot}
+
+To make the Arrhenius hazard concrete, Figure~\ref{fig:arr} plots the
+multiplicative acceleration $A(T)=e^{-E_a/k_B T}/e^{-E_a/k_B T_0}$
+against $T-T_0$ for three activation energies. The vertical reference
+line at $\Delta T=\SI{10}{\kelvin}$ corresponds to the industrial
+``10\,°C halving'' rule.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=9cm, height=9cm,
+  xlabel={$\Delta T = T - T_0$ (\si{\kelvin})},
+  ylabel={Acceleration factor $A(T)$},
+  xmin=0,xmax=40, ymin=0.5, ymax=12,
+  grid=major,
+  legend pos=north west,
+  legend cell align=left,
+  legend style={font=\scriptsize}
+]
+\addplot[blue,thick, domain=0:40, samples=80]
+    {exp( 0.6/(8.617e-5*298) - 0.6/(8.617e-5*(298+x)) )};
+\addlegendentry{$E_a = 0.6$ eV}
+
+\addplot[red,thick,dashed, domain=0:40, samples=80]
+    {exp( 0.75/(8.617e-5*298) - 0.75/(8.617e-5*(298+x)) )};
+\addlegendentry{$E_a = 0.75$ eV}
+
+\addplot[teal,thick,dotted, domain=0:40, samples=80]
+    {exp( 0.9/(8.617e-5*298) - 0.9/(8.617e-5*(298+x)) )};
+\addlegendentry{$E_a = 0.9$ eV}
+
+% Reference: 10K
+\draw[gray,dashed] (axis cs:10,0.5) -- (axis cs:10,12);
+\node[gray,font=\scriptsize] at (axis cs:11,11.5) {\,$\Delta T=10$\,K};
+\end{axis}
+\end{tikzpicture}
+\caption{Arrhenius temperature acceleration of the baseline failure
+rate, evaluated around $T_0=\SI{298}{\kelvin}$ (\SI{25}{\celsius}).
+A $\Delta T=\SI{10}{\kelvin}$ excursion accelerates failures by roughly
+$\times 2$ at $E_a=0.6$ eV and $\times 4$ at $E_a=0.9$ eV.
+For an AI training cluster running at the upper end of ASHRAE A1
+($T_{\mathrm{ca}}=\SI{27}{\celsius}$ setpoint), a chiller-trip
+excursion to \SI{37}{\celsius} doubles to quadruples the
+instantaneous component hazard. The model captures this in
+equation~\eqref{eq:hazard}.}
+\label{fig:arr}
+\end{figure}
+
+% ============================================================
+\section{A pgfplots view: loss exceedance curve (OEP)}\label{sec:oep}
+
+Figure~\ref{fig:oep} shows a Occurrence Exceedance Probability (OEP)
+curve obtained by simulating $10^5$ years of the compound-Poisson
+process with the parameters of the worked example. The curve is the
+empirical complement of the annual maximum-loss distribution.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{semilogyaxis}[
+   width=9cm, height=9cm,
+   xlabel={Annual maximum site loss (\$\,M)},
+   ylabel={Exceedance probability},
+   xmin=0,xmax=600, ymin=1e-4, ymax=1,
+   grid=major,
+   legend pos=north east,
+   legend style={font=\scriptsize}
+]
+% Power-law-style OEP for illustration
+\addplot[blue,thick,domain=1:600,samples=80]
+   {0.05*(1 + 0.4*(x-20)/60)^(-1/0.4) + 0.001};
+\addlegendentry{Compound NB-GPD model}
+\draw[red,dashed] (axis cs:0,0.005) -- (axis cs:600,0.005);
+\node[red,font=\scriptsize] at (axis cs:530,0.0065) {1-in-200 = 0.5\%};
+\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Illustrative annual Occurrence Exceedance Probability (OEP)
+curve for the worked example. The red dashed line marks the
+Solvency~II 1-in-200 year level. The corresponding 99.5\% VaR
+of approximately \$280M is the per-site catastrophe component of
+required capital.}
+\label{fig:oep}
+\end{figure}
+
+% ============================================================
+\section{Conclusions and open problems}\label{sec:conclusion}
+
+We have proposed a unified framework that joins the four disciplines
+the data center risk problem actually inhabits: electrical reliability
+engineering, mathematical statistics, classical actuarial pricing, and
+economic theory. The novel ingredients are (i) the coupled stochastic
+state-space model \eqref{eq:sde} with its Arrhenius--voltage--cyber
+hazard \eqref{eq:hazard}, (ii) the explicit
+Markov-chain-to-claim-frequency bridge of
+equations~\eqref{eq:U-leading}--\eqref{eq:freq-from-A}, (iii) the
+body-tail severity with POT-derived GPD, (iv) cyber--physical copula
+coupling, (v) the three-layer hybrid product with explicit basis-risk
+decomposition, (vi) the engineering closure of every hazard parameter
+to a physical measurement in Appendix~\ref{sec:eefoundations}, and
+(vii) the economic closure showing that the premium acts as a
+Pigouvian shadow price coordinating micro-level operator behaviour with
+macro-level systemic risk.
+
+\subsection*{Open problems}
+
+\begin{enumerate}[leftmargin=*,nosep]
+  \item \textbf{Calibration in the absence of public claims data.}
+        The data-center industry has no analogue of the IBNR
+        completion tables that have stabilised property pricing for
+        a century. The natural path is a confidential industry data
+        pool (akin to ISO in US auto), or anonymised SCADA-derived
+        telemetry feeds.
+  \item \textbf{Tail dependence on the cyber side.} Gaussian copulas
+        are tail-independent; for ILS and cat-bond layers a richer
+        copula (t, Gumbel, vine) is necessary. The data to calibrate
+        such copulas is sparse.
+  \item \textbf{Climate exposure dynamics.} The siting of new
+        hyperscale campuses in tornado-alley and hurricane-belt
+        geographies, plus the long lead times to relocate, exposes
+        the asset class to non-stationary nat-cat. Standard
+        Solvency~II catastrophe sub-modules are inappropriate for
+        AI-era data centers.
+  \item \textbf{Endogenous concentration.} As clusters of campuses are
+        built in the same ZIP code, the within-cluster correlation
+        $\rho$ tends to 1 for grid/utility failure modes, but
+        remains near 0 for site-specific fires. The aggregation
+        problem is therefore peril-specific and cannot be handled
+        with a single ``territorial'' factor.
+  \item \textbf{Liquid cooling, immersion, and battery chemistry
+        evolution.} The model parameters $E_a$, $\gamma_V$, $T^*$
+        and $\beta_C$ must be re-estimated as cooling and storage
+        technologies evolve. This is fundamentally a metrology
+        problem requiring collaboration between insurers and OEMs.
+  \item \textbf{Behind-the-meter generation.} The 2025 wave of
+        behind-the-meter gas/nuclear pairings introduces an entirely
+        new dependence: insurance underwriters now must price grid
+        \emph{independence} as a positive feature, but inherit the
+        failure modes of the on-site generation asset.
+  \item \textbf{Government risk-sharing.} The 2025 designation of
+        hyperscale facilities as Critical Digital Infrastructure
+        invites a Price-Anderson-style federal backstop. The
+        actuarial design of such a backstop is open.
+  \item \textbf{Optimal Pigouvian wedge.} The social premium
+        $P^{\mathrm{soc}}$ of~\eqref{eq:pigou} requires empirical
+        estimation of the external cost rate $\mathcal{E}$. Industry
+        consortia, regulators, and academia must jointly assemble the
+        evidence base for this number; its current absence is the
+        single largest source of underpricing in the asset class.
+  \item \textbf{Emerging-market actuarial product design.} The
+        framework of \S\ref{ss:em} extends naturally to grids with
+        Energy Availability Factors below 0.9 and ZAR/NGN/EGP
+        denominated tenant contracts. Bespoke actuarial products for
+        African hyperscale build-out — incorporating load-shedding
+        intensities, foreign-currency SLA exposures, and sovereign
+        rating-linked reinsurance triggers — represent a substantial
+        unaddressed market.
+  \item \textbf{Welfare analysis of capacity expansion.} The
+        macroeconomic identity~\eqref{eq:gdp-impact} suggests that
+        reducing $U$ by one order of magnitude in cloud-intensive
+        economies is worth tens of basis points of long-run growth.
+        A formal welfare calculation balancing the capital cost of
+        Tier-IV redundancy against this growth contribution, in a
+        Ramsey or Solow framework, would justify the public
+        investment case for reliability-improving R\&D.
+\end{enumerate}
+
+\subsection*{Notation summary}
+
+\begin{table}[ht]
+\centering\footnotesize
+\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Section \\
+\midrule
+$N_i$, $\lambda_i$, $\nu$ & claim count, NB rate, NB dispersion & \ref{sec:freq} \\
+$X_{i,j}$, $F_X$, $u$, $\xi$, $\sigma$ & severity, threshold, GPD shape/scale & \ref{sec:severity} \\
+$S_i = \sum X_{i,j}$       & compound annual loss             & \ref{sec:severity} \\
+$\rho$, $C_\rho$           & Gaussian copula correlation       & \ref{sec:dependence} \\
+$\mathbf{X}_t=(V_t,T_t,C_t)$ & state SDE                       & \ref{sec:coupled} \\
+$\lambda_t$                & instantaneous failure hazard      & \eqref{eq:hazard} \\
+$\tau^*$, $\mathrm{IG}(\mu,\lambda)$ & thermal runaway hitting time & \eqref{eq:hitting} \\
+$A$, $U$, $\mathrm{MTBF}$, $\mathrm{MTTR}$ & engineering reliability & \ref{sec:reliability} \\
+$P^{\mathrm{pure}}_i$, $P^{\mathrm{tech}}_i$ & pure and technical premium & \ref{sec:pricing} \\
+$\TVaR_\alpha(S)$, $\VaR_\alpha(S)$ & tail risk measures        & \ref{sec:pricing} \\
+$P_{\mathrm{IT}}$, $\mathrm{PUE}$    & electrical engineering inputs & \ref{sec:topology} \\
+$E_a$, $k_B$, $\gamma_V$, $\beta_C$  & Arrhenius / voltage / cyber stress & \eqref{eq:hazard} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\input{appendix}
+
+% ============================================================
+\begin{thebibliography}{99}\small
+\bibitem[Balkema and de~Haan(1974)]{Balkema1974}
+A.~A. Balkema and L.~de~Haan, ``Residual life time at great age,''
+\textit{Ann. Probab.}, vol.~2, pp.~792--804, 1974.
+
+\bibitem[Black(1969)]{Black1969}
+J.~R. Black, ``Electromigration --- a brief survey and some recent
+results,'' \textit{IEEE Trans. Electron Dev.}, vol.~ED-16,
+pp.~338--347, 1969.
+
+\bibitem[Baldwin Group(2025)]{Baldwin2025}
+The Baldwin Group, ``Data centers: risk and insurance across the
+development lifecycle,'' January 2026.
+
+\bibitem[Chhikara and Folks(1989)]{Chhikara1989}
+R.~S. Chhikara and J.~L. Folks, \textit{The Inverse Gaussian
+Distribution: Theory, Methodology, and Applications}, Marcel Dekker,
+1989.
+
+\bibitem[CyberCube(2025)]{CyberCube2025}
+CyberCube, ``AWS US-East-1 Security Incident Report,''
+preliminary loss range \$38--581\,M, October 2025.
+
+\bibitem[Engineering News-Record(2025)]{ENR2025}
+P.~Sisson, ``Report: Billions of dollars in data center construction
+risk is uninsured,'' \textit{Engineering News-Record}, 2025.
+
+\bibitem[NIRS(2025)]{NIRS2025}
+Uptime Institute Intelligence, ``South Korean data center fire sparks
+a stark reminder,'' November 2025.
+
+\bibitem[NetworkWorld(2023)]{NetworkWorld2023}
+A.~Bednarz, ``Data center fires raise concerns about lithium-ion
+batteries,'' \textit{NetworkWorld}, March 2023.
+
+\bibitem[Parametrix(2022)]{Parametrix2022}
+M.~Lebovits, ``Insuring the cloud,'' American Academy of Actuaries,
+September 2022.
+
+\bibitem[Pickands(1975)]{Pickands1975}
+J.~Pickands, ``Statistical inference using extreme order statistics,''
+\textit{Ann. Statist.}, vol.~3, pp.~119--131, 1975.
+
+\bibitem[Stull(2011)]{Stull2011}
+R.~Stull, ``Wet-bulb temperature from relative humidity and air temperature,''
+\textit{J. Appl. Meteorol. Climatol.}, vol.~50, pp.~2267--2269, 2011.
+
+\bibitem[Trivedi(2017)]{Trivedi2017}
+K.~S. Trivedi, \textit{Probability and Statistics with Reliability,
+Queuing and Computer Science Applications}, 2nd ed., Wiley, 2017.
+
+\bibitem[Uptime Institute(2024)]{Uptime2024}
+Uptime Institute, ``Annual Outage Analysis 2024.''
+
+\bibitem[Wang(2000)]{Wang2000}
+S.~S. Wang, ``A class of distortion operators for pricing financial
+and insurance risks,'' \textit{J. Risk Insur.}, vol.~67,
+pp.~15--36, 2000.
+\end{thebibliography}
+
+\end{document}

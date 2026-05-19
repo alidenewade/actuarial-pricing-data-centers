@@ -1,0 +1,31 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{axis}[
+   width=9cm, height=9cm,
+   xlabel={Wet-bulb temperature $T_{\mathrm{wb}}$ ($^\circ$C)},
+   ylabel={Cooling hazard $\lambda^{\mathrm{cool}}_t/\lambda^{\mathrm{cool}}_0$},
+   xmin=15, xmax=35, ymin=0, ymax=20,
+   grid=major,
+   legend pos=outer north east,
+   legend cell align=left,
+   legend style={font=\scriptsize}
+]
+% Three Psi (utilisation) levels
+\addplot[blue,thick,domain=15:35,samples=80]
+   {(x>22) * 0.6^2.5 * exp(0.10*(x-22))};
+\addlegendentry{$\Psi=0.60$ (low util.)}
+\addplot[red,thick,dashed,domain=15:35,samples=80]
+   {(x>22) * 0.85^2.5 * exp(0.13*(x-22))};
+\addlegendentry{$\Psi=0.85$ (typical AI)}
+\addplot[orange!85!black,thick,dotted,domain=15:35,samples=80]
+   {(x>22) * 0.97^2.5 * exp(0.18*(x-22))};
+\addlegendentry{$\Psi=0.97$ (saturated)}
+% design wet-bulb threshold
+\draw[gray,dashed] (axis cs:22,0) -- (axis cs:22,20);
+\node[gray,font=\scriptsize] at (axis cs:23.1,18) {$T^*_{\mathrm{wb}}$};
+\end{axis}
+\end{tikzpicture}
+\end{document}

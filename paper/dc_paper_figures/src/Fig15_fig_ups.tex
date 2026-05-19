@@ -1,0 +1,48 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{circuitikz}[american,
+   scale=0.95,
+   every node/.style={font=\footnotesize}]
+% AC input
+\draw (0,1) to[sV,l_=AC in] (0,3);
+\draw (0,3) -- (1.5,3);
+
+% Rectifier block
+\draw (1.5,2.5) rectangle (3.3,3.5);
+\node at (2.4,3) {\scriptsize Rectifier};
+\node at (2.4,2.3) {\scriptsize $\eta_{\mathrm{rec}}$};
+
+% DC bus
+\draw (3.3,3) -- (5.0,3);
+\draw[ultra thick,red] (5.0,2) -- (5.0,4);
+\node[red] at (5.4,4.2) {\scriptsize DC bus};
+
+% Battery string
+\draw (5.0,2) -- (5.0,1.0);
+\draw (4.7,1.0) -- (5.3,1.0);
+\draw (4.5,0.7) -- (5.5,0.7);
+\draw (4.7,0.4) -- (5.3,0.4);
+\draw (4.5,0.1) -- (5.5,0.1);
+\node at (6.4,0.55) {\scriptsize Li-ion string};
+\node at (6.4,0.15) {\scriptsize $V_{\mathrm{batt}}\!\approx\!540\,$V};
+
+% Inverter
+\draw (5.0,3) -- (6.5,3);
+\draw (6.5,2.5) rectangle (8.3,3.5);
+\node at (7.4,3) {\scriptsize Inverter};
+\node at (7.4,2.3) {\scriptsize $\eta_{\mathrm{inv}}$};
+
+% AC out
+\draw (8.3,3) -- (10,3);
+\draw (10,3) to[short,-o] (10.3,3);
+\node at (10.6,3.3) {\scriptsize AC out};
+
+% Static bypass switch (around the converter)
+\draw[blue,dashed] (1.5,3) -- (1.5,5);
+\draw[blue,dashed] (1.5,5) -- (9.5,5);
+\draw[blue,dashed] (9.5,5) -- (9.5,3);
+\node[blue] at (5.5,5.3) {\scriptsize Static bypass switch};
+\end{circuitikz}
+\end{document}

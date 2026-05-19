@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Hyperscale Data-Center Risk Simulation"
+message: "If you use this simulator in your research, please cite the underlying paper."
+type: software
+authors:
+  - family-names: Denewade
+    given-names: Ali
+    affiliation: "Intelligent Actuaries"
+repository-code: "https://github.com/alidenewade/actuarial-pricing-data-centers"
+license: MIT
+version: "1.0.0"
+date-released: "2026-05-19"
+preferred-citation:
+  type: article
+  title: "A Coupled Power–Thermal–Cyber Framework for the Actuarial Pricing and Insurance of Hyperscale Data Centers"
+  authors:
+    - family-names: Denewade
+      given-names: Ali
+  year: 2026
+  notes: "Working paper, Intelligent Actuaries research series, Paper 1."

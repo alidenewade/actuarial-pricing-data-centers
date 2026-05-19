@@ -1,0 +1,23 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{semilogyaxis}[
+   width=9cm, height=9cm,
+   xlabel={Annual maximum site loss (\$\,M)},
+   ylabel={Exceedance probability},
+   xmin=0,xmax=600, ymin=1e-4, ymax=1,
+   grid=major,
+   legend pos=north east,
+   legend style={font=\scriptsize}
+]
+% Power-law-style OEP for illustration
+\addplot[blue,thick,domain=1:600,samples=80]
+   {0.05*(1 + 0.4*(x-20)/60)^(-1/0.4) + 0.001};
+\addlegendentry{Compound NB-GPD model}
+\draw[red,dashed] (axis cs:0,0.005) -- (axis cs:600,0.005);
+\node[red,font=\scriptsize] at (axis cs:530,0.0065) {1-in-200 = 0.5\%};
+\end{semilogyaxis}
+\end{tikzpicture}
+\end{document}

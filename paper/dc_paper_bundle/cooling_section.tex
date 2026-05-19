@@ -1,0 +1,641 @@
+% ============================================================
+% Section: Cooling infrastructure as a first-class actuarial risk
+% ============================================================
+\section{Cooling infrastructure as a first-class actuarial risk}\label{sec:cooling}
+
+The actuarial literature on data centers has traditionally treated
+cooling as a derivative of power: heat is a by-product of IT load, and
+cooling failures are folded into a general ``machinery breakdown''
+category. This is empirically and economically inadequate. As of
+2025, cooling failures account for 12\% of public outages
+\citep{Uptime2024}, but the severity distribution of cooling-induced
+events has shifted dramatically with the adoption of AI training
+workloads, lithium-ion battery rooms, and liquid/immersion cooling
+architectures. This section elevates cooling to a first-class peril
+with its own hazard rate, severity tail, and premium-loading
+implications, and ties every cooling-engineering quantity back to the
+actuarial state variables $(\lambda, \xi, \sigma, U, P^{\mathrm{tech}})$
+of the main framework.
+
+\subsection{Why cooling deserves its own actuarial treatment}\label{ss:cool-why}
+
+Three structural shifts have made cooling an independent
+underwriting concern rather than a sub-peril of property damage:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=4pt]
+   \item \textbf{Density.} Rack power densities have risen from
+         $\approx\SI{10}{\kilo\watt\per rack}$ in 2015 to
+         $\SI{30}{}$--$\SI{120}{\kilo\watt\per rack}$ in 2025 for
+         AI-training racks. Air cooling alone is thermodynamically
+         insufficient above $\sim\SI{30}{\kilo\watt\per rack}$.
+   \item \textbf{Coupling.} Liquid and immersion cooling place fluids
+         in direct contact with energised electrical equipment.
+         A leak ceases to be a property damage event and becomes a
+         power-electrical coupled event with cascading SLA and
+         business-interruption consequences.
+   \item \textbf{Climate exposure.} Cooling efficiency depends on
+         outdoor wet-bulb temperature. The hazard rate is therefore
+         a non-stationary function of climate, with seasonality and
+         long-run drift that classical property catastrophe modelling
+         does not capture.
+\end{enumerate}
+
+We will see that each of these maps cleanly to a distinct
+modification of the hazard rate $\lambda_t$
+of~\eqref{eq:hazard}, the GPD tail shape $\xi$ of~\eqref{eq:POT}, and
+the premium loading $\theta$ of~\eqref{eq:final}.
+
+% ============================================================
+\subsection{Cooling topology: schematic for the actuary}\label{ss:cool-topology}
+
+Figure~\ref{fig:cooling-topology} shows the three canonical cooling
+architectures the underwriter must recognise, ordered by rack density
+they support. Each carries a qualitatively different actuarial signature.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+   every node/.style={font=\footnotesize},
+   blk/.style={draw,rounded corners=2pt,minimum width=2.0cm,minimum height=0.65cm,
+               align=center,fill=blue!4},
+   rack/.style={draw,rounded corners=1pt,minimum width=0.55cm,minimum height=1.2cm,
+                fill=red!8,align=center,font=\tiny},
+   pipe/.style={thick,blue!55!black,-{Latex[length=2mm]}},
+   wpipe/.style={thick,cyan!60!black,-{Latex[length=2mm]}},
+   opipe/.style={thick,orange!70!black,-{Latex[length=2mm]}},
+   label/.style={font=\scriptsize,gray}
+]
+
+% =========== Panel A: Air cooling ============
+\node[label,anchor=west,font=\scriptsize\bfseries] at (0,5.0)
+   {(A) Air cooling --- CRAH + chiller plant};
+
+\node[blk,fill=cyan!12] (CH) at (0.5,3.5) {Chiller\\plant};
+\node[blk,fill=cyan!12] (CT) at (3.5,3.5) {Cooling\\tower};
+\node[blk,fill=blue!8]  (CRAH) at (0.5,1.7) {CRAH\\unit};
+
+% Two return/supply pipes separated by 10pt so the arrows don't merge
+% and the labels sit cleanly on the outside of each pipe.
+\draw[wpipe,transform canvas={yshift= 5pt}] (CT) -- (CH)
+   node[midway,above,label,inner sep=1pt] {warm};
+\draw[wpipe,transform canvas={yshift=-5pt}] (CH) -- (CT)
+   node[midway,below,label,inner sep=1pt] {hot};
+\draw[wpipe] (CH) -- (CRAH) node[midway,left,label] {chilled W};
+
+% Server racks (air-cooled)
+\foreach \x in {2.8,3.4,4.0,4.6} {
+  \node[rack] at (\x,1.7) {};
+}
+\node[label] at (3.7,0.8) {racks $\leq\SI{30}{\kilo\watt}$};
+\draw[pipe,gray] (CRAH.east) -- (2.5,1.7) node[midway,above,label] {cold air};
+
+% =========== Panel B: Direct-to-chip liquid ============
+\node[label,anchor=west,font=\scriptsize\bfseries] at (7.5,5.0)
+   {(B) Direct-to-chip liquid (D2C)};
+
+\node[blk,fill=cyan!12] (CH2) at (8.0,3.5) {Facility\\chiller};
+\node[blk,fill=orange!12](CDU) at (10.7,3.5) {CDU\\(secondary)};
+\draw[wpipe] (CH2) -- (CDU) node[midway,above,label] {primary};
+
+% Manifold + cold plates
+\foreach \x in {11.6,12.1,12.6,13.1} {
+  \node[rack,fill=red!15] at (\x,1.7) {};
+  \draw[opipe,line width=0.7pt] (\x,2.3) -- (\x,1.9);
+}
+\draw[opipe] (CDU.south) -- (11.6,2.6) node[midway,right,label] {coolant};
+\node[label] at (12.35,0.8) {racks $\leq\SI{120}{\kilo\watt}$};
+
+% =========== Panel C: Immersion (full width, lower row) ============
+\node[label,anchor=west,font=\scriptsize\bfseries] at (0,-0.4)
+   {(C) Two-phase immersion (dielectric fluid)};
+
+% Tank, wider
+\draw[thick,gray,fill=orange!10] (0,-3.0) rectangle (7,-1.2);
+% liquid (lower part)
+\draw[thick,gray,fill=orange!18] (0.1,-2.95) rectangle (6.9,-2.0);
+
+% Submerged blades (drawn first so labels can sit beside them)
+\foreach \x in {1.0,2.0,3.0,4.0,5.0,6.0} {
+  \draw[red!60!black,thick] (\x,-2.85) rectangle (\x+0.35,-2.1);
+}
+
+% Condenser coil at top - placed in the vapour space
+\draw[wpipe,line width=1.0pt]
+  (0.5,-1.55) sin (1.2,-1.4) cos (1.9,-1.55)
+              sin (2.6,-1.4) cos (3.3,-1.55)
+              sin (4.0,-1.4) cos (4.7,-1.55)
+              sin (5.4,-1.4) cos (6.1,-1.55);
+
+% Labels - placed OUTSIDE the busy tank, to the right
+\node[label,anchor=west] at (7.2,-1.4) {condenser coil};
+\node[label,anchor=west] at (7.2,-1.85) {vapour (g)};
+\node[label,anchor=west] at (7.2,-2.45) {dielectric liquid ($\ell$)};
+\node[label,anchor=west,font=\tiny] at (7.2,-2.75) {Novec / FC-72 / HFE};
+\node[label] at (3.5,-3.25) {direct-immersion server blades};
+\node[label,anchor=west] at (7.2,-3.05) {$\sim\SI{1500}{\kilo\watt\per rack}$};
+
+% Phase change diagram (right side)
+\node[label,anchor=west,font=\scriptsize\bfseries] at (10.5,-0.4)
+   {Phase-change cycle};
+\draw[->] (10.5,-3.0) -- (13.8,-3.0) node[right,label] {$T$};
+\draw[->] (10.5,-3.0) -- (10.5,-1.0)  node[above,label] {$P$};
+\draw[blue!55!black,thick] plot[domain=0.2:2.8,smooth,samples=40]
+  ({10.5+\x}, {-2.95+0.35*exp(0.55*\x)});
+\node[label,anchor=west] at (10.7,-2.5) {liquid};
+\node[label,anchor=west] at (11.4,-1.5) {vapour};
+\filldraw[red!70!black] (13.2,-1.4) circle (1.2pt);
+\node[label,anchor=east,font=\tiny] at (13.1,-1.15) {critical point};
+\node[label,anchor=west,font=\tiny] at (10.55,-2.85) {triple};
+
+\end{tikzpicture}
+\caption{Three cooling regimes the underwriter must distinguish.
+(A) Air cooling via Computer Room Air Handlers (CRAH) and a chiller
+plant. (B) Direct-to-chip liquid: a secondary Coolant Distribution
+Unit (CDU) circulates coolant through cold plates mounted directly on
+processors. (C) Two-phase immersion: server boards are submerged in a
+low-boiling-point dielectric fluid whose vapour rises to a condenser
+coil and returns as liquid by gravity, exploiting latent heat. The
+phase-change cycle sketch (right) shows the liquid--vapour coexistence
+curve along which the cooling operates.}
+\label{fig:cooling-topology}
+\end{figure}
+
+% ============================================================
+\subsection{The thermodynamic engine: physics that drives the hazard}\label{ss:cool-thermo}
+
+The cooling system is a heat engine operating in reverse, characterised
+by its coefficient of performance (COP):
+\begin{equation}\label{eq:COP}
+   \mathrm{COP} \;=\; \frac{\dot Q_{\mathrm{cool}}}{\dot W_{\mathrm{in}}},
+\end{equation}
+where $\dot Q_{\mathrm{cool}}$ is the rate of heat removal from the IT
+load and $\dot W_{\mathrm{in}}$ is the electrical power consumed by the
+cooling plant itself. For a Carnot-limited chiller operating between
+cold-aisle temperature $T_c$ and outdoor wet-bulb $T_h$,
+\begin{equation}\label{eq:Carnot}
+   \mathrm{COP}_{\mathrm{Carnot}} \;=\;
+   \frac{T_c}{T_h - T_c}.
+\end{equation}
+Real chillers achieve $30$--$60\%$ of the Carnot limit. The cooling
+plant's electrical load is therefore
+$\dot W_{\mathrm{in}}= \dot Q_{\mathrm{cool}}/\mathrm{COP}$, and the
+data center's PUE (Power Usage Effectiveness) decomposes as
+\begin{equation}\label{eq:PUE-decomp}
+   \mathrm{PUE} \;=\; 1 \;+\; \frac{1}{\mathrm{COP}\,\eta_{\mathrm{UPS}}}
+                          \;+\; \varepsilon_{\mathrm{lighting,etc}}.
+\end{equation}
+A critical consequence: as $T_h$ rises (climate change, heatwave),
+$\mathrm{COP}$ falls hyperbolically, and the chiller draws more power
+to deliver the same cooling capacity. Once the chiller saturates at
+its rated motor capacity, additional load cannot be cooled and a
+\emph{thermal envelope failure} ensues. This is the chain that
+converts a weather event into an actuarial claim, and we encode it in
+\eqref{eq:lambda-cool} below.
+
+\paragraph{Wet-bulb temperature and the actuarial covariate.}
+Cooling capacity is governed not by dry-bulb (air) temperature but by
+\emph{wet-bulb} temperature $T_{\mathrm{wb}}$, the lowest temperature
+achievable by adiabatic evaporation. The wet-bulb approximation
+\citep{Stull2011} is
+\begin{equation}\label{eq:wetbulb}
+   T_{\mathrm{wb}} \;\approx\; T \arctan\!\bigl[0.151977(\mathrm{RH} + 8.313659)^{1/2}\bigr]
+   + \arctan(T + \mathrm{RH}) - \arctan(\mathrm{RH}-1.676331)
+   + 0.00391838\,\mathrm{RH}^{3/2}\arctan(0.023101\,\mathrm{RH}) - 4.686035,
+\end{equation}
+with $T$ in $^\circ$C and $\mathrm{RH}$ in \%. This is the
+\emph{correct} climate covariate for the cooling hazard process.
+
+% ============================================================
+\subsection{An Arrhenius-type cooling hazard}\label{ss:cool-hazard}
+
+Define the cooling-stress factor
+\begin{equation}\label{eq:cool-stress}
+   \Psi(t) \;=\; \frac{\dot Q_{\mathrm{IT}}(t)}{\dot Q_{\mathrm{cool},\max}\,(1-U_{\mathrm{cool}})}.
+\end{equation}
+This is the ratio of instantaneous IT heat output to available cooling
+capacity. $\Psi=1$ corresponds to a fully saturated cooling plant;
+$\Psi>1$ is thermodynamic infeasibility. The cooling-induced
+instantaneous failure hazard is then
+\begin{equation}\label{eq:lambda-cool}
+   \boxed{\;
+   \lambda^{\mathrm{cool}}_t \;=\; \lambda^{\mathrm{cool}}_0
+   \cdot \exp\!\bigl(\delta_T (T_{\mathrm{wb}}(t)-T^*_{\mathrm{wb}})\bigr)
+   \cdot \Psi(t)^{\gamma_\Psi}
+   \cdot \1\{\,T_{\mathrm{wb}}(t)>T^*_{\mathrm{wb}}\,\},\;}
+\end{equation}
+where $T^*_{\mathrm{wb}}$ is the chiller-design wet-bulb temperature,
+$\delta_T\in[0.08,0.20]$ per kelvin is the wet-bulb stress
+coefficient calibrated from chiller derating curves, and
+$\gamma_\Psi \in [2.5,4]$ is a saturation exponent that captures the
+sharp non-linearity as $\Psi\to 1$. The right-hand side
+of~\eqref{eq:lambda-cool} is the cooling analogue of
+the Arrhenius--voltage--cyber decomposition in the electrical hazard
+\eqref{eq:hazard}. The composite hazard for the IT load is then
+\begin{equation}\label{eq:lambda-total}
+   \lambda_t^{\mathrm{IT}} \;=\;
+   \underbrace{\lambda_t^{\mathrm{elec}}}_{\text{from }\eqref{eq:hazard}}
+   \;+\;\lambda^{\mathrm{cool}}_t
+   \;-\; \lambda_t^{\mathrm{elec}}\lambda^{\mathrm{cool}}_t \,\dd t
+   \;\approx\; \lambda_t^{\mathrm{elec}} + \lambda^{\mathrm{cool}}_t,
+\end{equation}
+the last step holding for the small instantaneous rates of practical
+interest.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+   width=9cm, height=9cm,
+   xlabel={Wet-bulb temperature $T_{\mathrm{wb}}$ ($^\circ$C)},
+   ylabel={Cooling hazard $\lambda^{\mathrm{cool}}_t/\lambda^{\mathrm{cool}}_0$},
+   xmin=15, xmax=35, ymin=0, ymax=20,
+   grid=major,
+   legend pos=outer north east,
+   legend cell align=left,
+   legend style={font=\scriptsize}
+]
+% Three Psi (utilisation) levels
+\addplot[blue,thick,domain=15:35,samples=80]
+   {(x>22) * 0.6^2.5 * exp(0.10*(x-22))};
+\addlegendentry{$\Psi=0.60$ (low util.)}
+\addplot[red,thick,dashed,domain=15:35,samples=80]
+   {(x>22) * 0.85^2.5 * exp(0.13*(x-22))};
+\addlegendentry{$\Psi=0.85$ (typical AI)}
+\addplot[orange!85!black,thick,dotted,domain=15:35,samples=80]
+   {(x>22) * 0.97^2.5 * exp(0.18*(x-22))};
+\addlegendentry{$\Psi=0.97$ (saturated)}
+% design wet-bulb threshold
+\draw[gray,dashed] (axis cs:22,0) -- (axis cs:22,20);
+\node[gray,font=\scriptsize] at (axis cs:23.1,18) {$T^*_{\mathrm{wb}}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Cooling hazard~\eqref{eq:lambda-cool} as a function of
+wet-bulb temperature, for three utilisation levels $\Psi$. At
+$T_{\mathrm{wb}}<T^*_{\mathrm{wb}}$ the chiller operates within
+design and the hazard is zero. Above the design wet-bulb, the hazard
+rises exponentially, and the rate of rise accelerates with $\Psi$:
+a saturated plant on a hot day faces double-digit hazard
+multipliers. This is the channel by which a climate covariate becomes
+an actuarial frequency.}
+\label{fig:cool-hazard}
+\end{figure}
+
+% ============================================================
+\subsection{Chemistry of dielectric and refrigerant fluids}\label{ss:cool-chem}
+
+For air-cooled and water-chilled plants, fluid risks are well-bounded
+(water leaks, glycol contamination, biological fouling). For
+liquid-immersion plants, the choice of working fluid drives the
+catastrophic-loss tail, and an actuary cannot price the cover without
+understanding the chemistry.
+
+Three families are in service:
+
+\begin{table}[ht]
+\centering\footnotesize
+\caption{Comparison of cooling fluid families relevant to data center
+immersion and direct-to-chip cooling. Values are nominal; consult
+manufacturer datasheets for binding numbers.}\label{tab:fluids}
+\setlength{\tabcolsep}{4pt}
+% Natural-width left-aligned columns + \resizebox so every cell sits on
+% one line (the previous p{3.4cm}/p{2.6cm} forced "3M Novec 7100/7500
+% (2-ph)" and "high GWP phase-out" to wrap).
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lcccccl@{}}
+\toprule
+Family & Boil pt & Dielectric & GWP & Tox & Cost & Risk profile \\
+       & ($^\circ$C) & (kV/mm) & (CO$_2$ eq) & & & \\
+\midrule
+Mineral oil (1-ph)         & ---    & 30--50 & low      & low      & low  & flammability \\
+Synthetic ester (1-ph)     & ---    & 60--85 & low      & very low & med  & viscosity drift \\
+3M Novec 7100/7500 (2-ph)  & 61--98 & 11--13 & 297--580 & low      & high & PFAS regulation \\
+3M FC-72/FC-3284 (2-ph)    & 56--130 & 12--14 & 7400+   & low      & high & high GWP phase-out \\
+Hydrofluoroether (HFE)     & 56--98 & 11--13 & 200--600 & low      & high & PFAS regulation \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\paragraph{Phase-change kinetics.}
+Two-phase immersion exploits the Clausius--Clapeyron relation
+\begin{equation}\label{eq:CC}
+   \frac{\dd P}{\dd T} \;=\; \frac{L_{\mathrm{vap}}}{T\,\Delta v},
+\end{equation}
+where $L_{\mathrm{vap}}$ is the latent heat of vaporisation and
+$\Delta v$ the specific-volume change on phase change. The
+attraction of two-phase cooling is the enormous heat-removal capacity
+at constant temperature: a phase change at \SI{60}{\celsius} can
+remove $\sim\SI{1500}{\kilo\watt\per rack}$ at quasi-constant
+$T$. The corresponding actuarial vulnerability is that any
+perturbation that shifts the saturation curve (impurity ingress,
+non-condensable gases, condenser-coil fouling) destroys the
+isothermal advantage, and the system silently degrades until a
+sudden over-temperature event.
+
+\paragraph{PFAS regulatory risk.}
+3M, the principal manufacturer of fluorinated coolants
+(Novec, FC family), announced in 2022 a phase-out of PFAS chemistry
+by the end of 2025. The replacement supply chain is still
+consolidating in 2026. Underwriters offering full-replacement-value
+property cover on immersion-cooled facilities must price
+\emph{coolant-replacement risk} alongside hardware-replacement
+risk: a regulatory ban can render a working installation
+non-restorable to original specification. This creates an
+\emph{insurance-recoverable PFAS contingent liability} that is
+analogous in spirit to the asbestos cover crisis of the late
+twentieth century. The Wang transform pricing of
+\S\ref{ss:loadings} should be applied to this exposure with
+$\lambda^*>0$ corresponding to a market-implied catastrophe load.
+
+% ============================================================
+\subsection{Failure modes and the GPD tail}\label{ss:cool-failure}
+
+Cooling-induced loss severities are characteristically bimodal:
+attritional losses are small (a CRAH unit failure with redundancy in
+place is a maintenance event), while catastrophic events are
+enormous (a chilled-water leak above a transformer can disable an
+entire power train and force evacuation of an IT hall).
+Figure~\ref{fig:cooling-faulttree} summarises the cooling fault
+structure.
+
+\begin{figure}[ht]
+\centering
+% Natural width is ~16.2cm (the "Thermal-runaway prop." label stretches
+% the rightmost ievt box past its 2.4cm minimum), which overflows the
+% 15.9cm textwidth. \resizebox guarantees the diagram fits exactly.
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+   every node/.style={font=\footnotesize},
+   top/.style={draw,rectangle,rounded corners=2pt,fill=red!15,minimum width=4cm,
+               minimum height=0.6cm,align=center},
+   gate/.style={draw,ellipse,fill=yellow!15,minimum width=0.9cm,minimum height=0.45cm,
+                inner sep=2pt},
+   bevt/.style={draw,circle,fill=blue!8,minimum size=0.55cm,inner sep=1pt,align=center},
+   ievt/.style={draw,rectangle,rounded corners=1pt,fill=blue!4,minimum width=2.4cm,
+                minimum height=0.5cm,align=center},
+   ln/.style={thick}
+]
+\node[top] (TC) at (0,0) {Top event $T^{\mathrm{cool}}$: cooling lost};
+\node[gate,below=0.35cm of TC] (G0) {OR};
+\draw[ln] (TC) -- (G0);
+
+\node[ievt,below=0.55cm of G0,xshift=-6.6cm] (CH) {Chiller plant fault};
+\node[ievt,below=0.55cm of G0,xshift=-2.2cm] (DI) {Distribution fault};
+\node[ievt,below=0.55cm of G0,xshift= 2.2cm] (LE) {Liquid--electrical event};
+\node[ievt,below=0.55cm of G0,xshift= 6.6cm] (TR) {Thermal-runaway prop.};
+\draw[ln] (G0) -- (CH);
+\draw[ln] (G0) -- (DI);
+\draw[ln] (G0) -- (LE);
+\draw[ln] (G0) -- (TR);
+
+% chiller plant subtree
+\node[gate,below=0.3cm of CH] (G1) {OR};
+\draw[ln] (CH) -- (G1);
+\node[bevt,below=0.45cm of G1,xshift=-1.0cm] (CHa) {comp.};
+\node[bevt,below=0.45cm of G1,xshift= 0.0cm] (CHb) {pump};
+\node[bevt,below=0.45cm of G1,xshift= 1.0cm] (CHc) {ctrl};
+\draw[ln] (G1) -- (CHa);
+\draw[ln] (G1) -- (CHb);
+\draw[ln] (G1) -- (CHc);
+
+% distribution subtree
+\node[gate,below=0.3cm of DI] (G2) {OR};
+\draw[ln] (DI) -- (G2);
+\node[bevt,below=0.45cm of G2,xshift=-0.7cm] (DIa) {pipe};
+\node[bevt,below=0.45cm of G2,xshift= 0.7cm] (DIb) {valve};
+\draw[ln] (G2) -- (DIa);
+\draw[ln] (G2) -- (DIb);
+
+% liquid-electrical (the catastrophic branch)
+\node[gate,below=0.3cm of LE,fill=red!20] (G3) {AND};
+\draw[ln] (LE) -- (G3);
+\node[bevt,below=0.45cm of G3,xshift=-0.7cm] (LEa) {leak};
+\node[bevt,below=0.45cm of G3,xshift= 0.7cm] (LEb) {energ.};
+\draw[ln] (G3) -- (LEa);
+\draw[ln] (G3) -- (LEb);
+
+% propagation
+\node[gate,below=0.3cm of TR] (G4) {OR};
+\draw[ln] (TR) -- (G4);
+\node[bevt,below=0.45cm of G4,xshift=-0.7cm] (TRa) {Li-ion};
+\node[bevt,below=0.45cm of G4,xshift= 0.7cm] (TRb) {coolant};
+\draw[ln] (G4) -- (TRa);
+\draw[ln] (G4) -- (TRb);
+
+\end{tikzpicture}%
+}
+\caption{Cooling-system fault tree. The four top-level branches feed
+qualitatively different severity distributions. The
+\textit{liquid--electrical} branch is an AND gate
+(a fluid leak must occur \emph{and} land on energised equipment)
+which makes it rare but catastrophic --- the precise feature that
+fattens the GPD tail.}
+\label{fig:cooling-faulttree}
+\end{figure}
+
+We partition the cooling severity into two components:
+\begin{equation}\label{eq:cool-sev}
+   X^{\mathrm{cool}} \;=\;
+   X^{\mathrm{attr}}_{\mathrm{cool}} \;+\; X^{\mathrm{cat}}_{\mathrm{cool}},
+\end{equation}
+with body distribution lognormal $\ln X^{\mathrm{attr}}_{\mathrm{cool}}
+\sim \mathcal{N}(\mu_{\mathrm{cool}},\sigma_{\mathrm{cool}}^2)$
+fitted from maintenance-claim experience, and catastrophic component
+GPD with shape $\xi_{\mathrm{cool}}$ and scale $\sigma_{\mathrm{cool}}$.
+Empirical experience to date suggests
+$\xi_{\mathrm{cool}}\in [0.3, 0.7]$ for liquid-cooled facilities ---
+\emph{noticeably heavier than the electrical-side
+$\xi_{\mathrm{elec}}\in[0.2,0.6]$ of \S\ref{sec:severity}}. The
+underwriting consequence is a steeper tail-loading
+$\theta_2$ in~\eqref{eq:final} for sites with liquid or immersion
+cooling architecture.
+
+% ============================================================
+\subsection{Water consumption and the WUE risk}\label{ss:cool-wue}
+
+Cooling consumes water at a rate quantified by the Water Usage
+Effectiveness (WUE) ratio:
+\begin{equation}\label{eq:WUE}
+   \mathrm{WUE} \;=\; \frac{\text{annual on-site water}}{\text{annual IT energy}}
+   \quad [\mathrm{L/kWh}].
+\end{equation}
+Industry-average WUE for evaporative-cooled hyperscale facilities is
+\SI{1.8}{\liter\per\kilo\watt\hour}; best-in-class adiabatic plants
+reach \SI{0.2}{\liter\per\kilo\watt\hour}; dry-cooled (air) sites
+approach zero. For a \SI{200}{\mega\watt} hyperscale at WUE = 1.8,
+annual water draw is \SI{3.15}{\giga\liter} --- comparable to a
+small town's municipal demand.
+
+The actuarial relevance is twofold. First, water-scarcity
+restrictions (already in force in Arizona, parts of Spain, and
+sections of South Africa) can compel an operator to switch from
+evaporative to dry cooling at short notice; the
+COP loss raises $\Psi$ and through~\eqref{eq:lambda-cool} raises
+$\lambda^{\mathrm{cool}}$. Second, water-rights litigation creates a
+new third-party liability exposure that the standard
+$L^{(i)}_{\mathrm{LIAB}}$ component of~\eqref{eq:loss-decomp} must now
+explicitly carry.
+
+\paragraph{South African application.} Cape Town's \emph{Day Zero}
+water crisis of 2018 and Johannesburg's recurrent drought stress
+make WUE a binding constraint on any African hyperscale build.
+For an actuary pricing a Johannesburg campus, the
+$L^{(i)}_{\mathrm{LIAB}}$ component should explicitly include a
+drought-contingent business-continuity sub-limit, with a parametric
+trigger tied to municipal-water-restriction levels.
+
+% ============================================================
+\subsection{Climate non-stationarity and the cooling reinsurance layer}\label{ss:cool-climate}
+
+Equation~\eqref{eq:lambda-cool} contains $T_{\mathrm{wb}}(t)$ as a
+deterministic-looking covariate, but it is in reality a non-stationary
+stochastic process. We model it as
+\begin{equation}\label{eq:Twb-process}
+   T_{\mathrm{wb}}(t) \;=\; \mu_{\mathrm{wb}}
+   + \beta\, t
+   + s(t)
+   + \sigma_{\mathrm{wb}}\,B_t,
+\end{equation}
+with $\mu_{\mathrm{wb}}$ the long-run mean, $\beta>0$ a climate-drift
+slope (empirically $\beta\approx 0.04$ K/yr for the major
+hyperscale geographies under RCP 4.5), $s(t)$ a deterministic
+seasonal kernel, and $B_t$ standard Brownian motion. The drift
+$\beta$ shifts the cooling hazard upward by
+$\dd\E[\lambda^{\mathrm{cool}}]/\dd t = \delta_T\,\beta\,
+\E[\lambda^{\mathrm{cool}}]$, meaning that
+\emph{a fully Tier-IV-rated site today drifts into Tier-III
+effective performance over a decade if the cooling design is not
+upgraded}. The reinsurance implication is direct: cooling-driven
+losses are non-stationary, so a 10-year property treaty written at
+today's $\lambda^{\mathrm{cool}}_0$ is under-priced unless the
+trajectory is loaded in.
+
+% ============================================================
+\subsection{Operational risk: human factors, water treatment, controls}\label{ss:cool-ops}
+
+Beyond the deterministic physics, cooling carries a substantial
+operational-risk burden. The Uptime Institute's annual outage
+analysis attributes a non-trivial fraction of cooling failures to:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=4pt]
+   \item \textbf{Water treatment.} Improper biocide dosing leads to
+         \emph{Legionella} colonisation in cooling towers (a public
+         health liability), or to galvanic corrosion of chiller
+         heat exchangers (a property damage exposure).
+   \item \textbf{Setpoint mismanagement.} The cold-aisle temperature
+         setpoint is a finely-tuned trade-off: too low and PUE
+         degrades; too high and equipment ages faster. Errors in
+         setpoint procedures produce a tail of correlated
+         multi-rack thermal events.
+   \item \textbf{Building Management System (BMS) integrity.} The BMS
+         is the soft target for cyber attacks aimed at physical
+         disruption. An attacker who can mis-set chiller
+         enable/disable signals can produce an outage with no
+         visible electrical fault --- placing the loss in the
+         $L^{(i)}_{\mathrm{CY}}$ component of~\eqref{eq:loss-decomp}
+         even though the physical mechanism is purely thermal.
+\end{itemize}
+
+These mechanisms motivate a \emph{cooling-specific cyber-physical
+coupling} that enters the dependence structure of
+\S\ref{sec:dependence} with non-negligible Gumbel-copula tail
+dependence $\lambda_U^{\mathrm{cool,cy}}\in[0.10,0.25]$.
+
+% ============================================================
+\subsection{Implications for pricing, capital, and product design}\label{ss:cool-pricing}
+
+We can now state the cooling-specific modifications to the
+pricing framework of~\S\ref{sec:pricing}--\S\ref{sec:capital}:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=4pt]
+   \item \textbf{Frequency.} The Poisson--Gamma frailty intensity
+         $\lambda_i$ of~\eqref{eq:GLM} acquires a cooling regressor:
+         \begin{equation}\label{eq:GLM-cool}
+            \log \lambda_i = \cdots
+            + \beta_6\,\mathrm{Liquid}_i
+            + \beta_7\,\mathrm{Climate}_i
+            + \beta_8\,(\mathrm{PUE}_i - 1.10)^+,
+         \end{equation}
+         where $\mathrm{Liquid}_i\in\{0,1\}$ flags liquid/immersion
+         architecture, $\mathrm{Climate}_i$ is a wet-bulb-derived
+         hazard score, and the $(\mathrm{PUE}_i-1.10)^+$ term
+         penalises sites operating below best-in-class efficiency.
+
+   \item \textbf{Severity.} The GPD tail shape for cooling-driven
+         losses is heavier:
+         $\xi_{\mathrm{cool}}\in[0.3,0.7]$ versus
+         $\xi_{\mathrm{elec}}\in[0.2,0.6]$.
+         Sites with liquid or immersion cooling should be priced
+         with a cooling-component tail loading $\theta_2$ scaled by
+         $1+\eta_{\mathrm{cool}}$, with $\eta_{\mathrm{cool}}\approx 0.25$
+         from broker-quoted comparisons.
+
+   \item \textbf{Capital.} Solvency~II SCR contribution from cooling
+         scales with $\TVaR_{0.995}(S^{\mathrm{cool}})$, which is
+         disproportionately large because of (i) the heavier tail
+         and (ii) the cooling--electrical correlation: a chilled-water
+         leak on a power train brings both subsystems down at once.
+
+   \item \textbf{Product.} The hybrid indemnity--parametric product
+         of \S\ref{sec:product} acquires a third parametric trigger:
+         a SCADA-measured PUE excursion or a sustained $\Psi>0.95$
+         reading for more than a threshold duration. This is the
+         cooling analogue of the voltage-sag trigger and shares the
+         same basis-risk decomposition~\eqref{eq:basis2}.
+\end{enumerate}
+
+% ============================================================
+\subsection{What an underwriter should ask}\label{ss:cool-underwriting}
+
+In the same spirit as an arc-flash survey (\S\ref{ss:arcflash})
+gives a direct estimator of the electrical-side $\xi$, a
+\emph{cooling-system audit} produces the analogous estimator for
+$\xi_{\mathrm{cool}}$. The audit data the underwriter should
+require, in priority order, are:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=4pt]
+   \item Architecture flag: air / D2C liquid / immersion (and which
+         fluid family from Table~\ref{tab:fluids}).
+   \item Design wet-bulb temperature $T^*_{\mathrm{wb}}$ and the past
+         five years of distribution-system wet-bulb measurements.
+   \item PUE distribution (1-second resolution, full year) and its
+         empirical CDF.
+   \item Chiller plant single-line: redundancy ($N$, $N+1$, $2N$),
+         compressor count, free-cooling capability.
+   \item Coolant inventory and replacement-chain status (especially
+         PFAS exposure under~\S\ref{ss:cool-chem}).
+   \item Water source, water rights, drought-restriction history.
+   \item BMS network architecture and the segmentation between BMS
+         and IT-OT networks (the cyber-physical coupling lever).
+   \item History of incident reports including
+         pump-failure-near-misses, valve actuator failures, and
+         setpoint-procedure deviations.
+\end{enumerate}
+
+A standardised cooling-audit dataset would do for cooling what the
+NFPA 70E arc-flash survey does for electrical: convert a tacit
+engineering-quality assessment into a one-number actuarial input.
+\emph{The framework of this paper supports the integration of such an
+audit directly through equation~\eqref{eq:GLM-cool}}.
+
+% ============================================================
+\subsection{Synthesis: cooling closes the third leg of the actuarial triangle}\label{ss:cool-synth}
+
+The main text has already closed the loop between electrical
+reliability engineering and actuarial pricing
+(\S\ref{ss:closure}), and between actuarial pricing and economic
+welfare (\S\ref{ss:loop}). This section closes the third leg: the
+loop between \emph{thermodynamics, climate, and chemistry} on the
+engineering side, and the actuarial state variables $(\lambda, \xi,
+\theta, U)$ on the pricing side. Equation~\eqref{eq:lambda-cool} is
+the cooling analogue of the electrical hazard~\eqref{eq:hazard};
+equation~\eqref{eq:GLM-cool} the cooling extension of the frequency
+regression; the GPD-tail observation $\xi_{\mathrm{cool}}>\xi_{\mathrm{elec}}$
+is the severity claim; and the audit checklist of
+\S\ref{ss:cool-underwriting} is the metrology closure.
+
+Without this third leg, an actuarial framework for hyperscale data
+centers is incomplete --- it would mis-price exactly the class of
+risks that the AI training era and the climate transition are now
+generating.
+

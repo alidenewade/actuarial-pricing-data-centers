@@ -1,0 +1,57 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{axis}[
+   width=9cm, height=9cm,
+   xlabel={Cover quantity $Q$ (\$bn of single-event capacity)},
+   ylabel={Premium price $P$ (bps of TIV)},
+   xmin=0, xmax=10, ymin=0, ymax=28,
+   grid=major,
+   legend pos=outer north east,
+   legend cell align=left,
+   legend style={font=\scriptsize}
+]
+% Original supply
+\addplot[blue,thick,domain=0.5:10,samples=80]
+  {3 + 1.4*x};
+\addlegendentry{$P^S$ baseline}
+
+% Shifted supply: lambda or xi up
+\addplot[blue,thick,dashed,domain=0.5:10,samples=80]
+  {6 + 2.0*x};
+\addlegendentry{$P^S$ post-shock ($\lambda\!\!\uparrow$ or $\xi\!\!\uparrow$)}
+
+% Original demand
+\addplot[red,thick,domain=0.3:10,samples=80]
+  {20 - 2.0*x + 0.05*x^2};
+\addlegendentry{$P^D$ baseline}
+
+% Shifted demand: TIV growth shifts demand outward
+\addplot[red,thick,dotted,domain=0.3:10,samples=80]
+  {25 - 2.0*x + 0.05*x^2};
+\addlegendentry{$P^D$ growth (TIV$\!\!\uparrow$)}
+
+% Old equilibrium
+\filldraw (axis cs:4.32,9.04) circle (2pt);
+\node[font=\scriptsize] at (axis cs:3.6,7.6) {$E_0$};
+
+% Equilibrium after supply shock
+\filldraw[blue!60!black] (axis cs:3.13,12.27) circle (2pt);
+\node[blue!60!black,font=\scriptsize] at (axis cs:2.3,13.4) {$E_1$};
+
+% Equilibrium after both supply shock and demand shift
+\filldraw[purple] (axis cs:4.16,14.32) circle (2pt);
+\node[purple,font=\scriptsize] at (axis cs:5.0,15.0) {$E_2$};
+
+% Arrows showing shifts
+\draw[->,thick,gray] (axis cs:7,12.8) -- (axis cs:7,20);
+\node[gray,font=\scriptsize] at (axis cs:7.7,17) {supply $\uparrow$};
+
+\draw[->,thick,gray] (axis cs:6,8) -- (axis cs:6.7,13);
+\node[gray,font=\scriptsize] at (axis cs:7.2,10.5) {demand $\rightarrow$};
+
+\end{axis}
+\end{tikzpicture}
+\end{document}

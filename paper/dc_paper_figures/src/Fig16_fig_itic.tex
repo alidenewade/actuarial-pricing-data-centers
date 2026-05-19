@@ -1,0 +1,41 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{semilogxaxis}[
+  width=0.82\linewidth, height=6.2cm,
+  xlabel={Disturbance duration (cycles, log-scale)},
+  ylabel={Voltage (\%\ of nominal)},
+  xmin=0.001, xmax=1000, ymin=0, ymax=200,
+  grid=major,
+  legend pos=north east,
+  legend style={font=\scriptsize},
+  log basis x=10,
+]
+% Upper envelope (overvoltage tolerance)
+\addplot[red,thick] coordinates {
+  (0.001,500) (0.01,200) (0.05,140) (0.5,140)
+  (10,140) (30,120) (1000,110) };
+\addlegendentry{ITIC upper envelope}
+
+% Lower envelope (undervoltage tolerance)
+\addplot[blue,thick] coordinates {
+  (0.001,0) (0.01,0) (0.02,70) (0.5,70)
+  (10,80)  (30,90)  (1000,90) };
+\addlegendentry{ITIC lower envelope}
+
+% Acceptable region shading
+\addplot[fill=green!10,draw=none,forget plot] coordinates
+  { (0.02,70) (0.5,70) (10,80) (30,90) (1000,90) (1000,110)
+    (30,120) (10,140) (0.5,140) (0.05,140) (0.01,200) (0.001,500)
+    (0.001,0) (0.02,70) };
+
+% Annotations
+\node[font=\scriptsize] at (axis cs:0.1,100) {Acceptable};
+\node[font=\scriptsize,red] at (axis cs:0.005,300) {No damage};
+\node[font=\scriptsize,blue] at (axis cs:100,50) {No interruption};
+\node[font=\scriptsize] at (axis cs:0.5,20)  {UPS trips$\to$battery};
+\end{semilogxaxis}
+\end{tikzpicture}
+\end{document}

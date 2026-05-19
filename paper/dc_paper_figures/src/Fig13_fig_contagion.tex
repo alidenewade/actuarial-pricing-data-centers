@@ -1,0 +1,57 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}[
+   every node/.style={font=\footnotesize},
+   sec/.style={draw,rectangle,rounded corners=2pt,minimum height=0.7cm,
+               minimum width=2cm,align=center},
+   primary/.style={sec,fill=red!12},
+   secondary/.style={sec,fill=orange!12},
+   tertiary/.style={sec,fill=yellow!12},
+   recovery/.style={sec,fill=green!12},
+   arr/.style={-{Latex[length=2mm]},thick,blue!55!black}
+]
+% Layer 1
+\node[primary] (DC) at (0,4) {DC failure\\$S^{\mathrm{DC}}$};
+
+% Layer 2: direct propagations
+\node[secondary] (GR) at (-4.5,2.5) {Grid stress};
+\node[secondary] (SLA) at (-1.6,2.5) {SLA chains};
+\node[secondary] (CL) at (1.6,2.5) {Cloud outage};
+\node[secondary] (RS) at (4.5,2.5) {Reinsurer\\loss $S^{(j)}$};
+
+\draw[arr] (DC) -- (GR);
+\draw[arr] (DC) -- (SLA);
+\draw[arr] (DC) -- (CL);
+\draw[arr] (DC) -- (RS);
+
+% Layer 3: real-economy
+\node[tertiary] (UT) at (-5.5,0.8) {Utility};
+\node[tertiary] (FIN) at (-3,0.8) {Financial\\system};
+\node[tertiary] (PROD) at (0,0.8) {Production $Y$};
+\node[tertiary] (CAP) at (3,0.8) {Capital\\markets};
+\node[tertiary] (SOV) at (5.5,0.8) {Sovereign\\backstop};
+
+\draw[arr] (GR) -- (UT);
+\draw[arr] (GR) -- (FIN);
+\draw[arr] (SLA) -- (PROD);
+\draw[arr] (CL) -- (PROD);
+\draw[arr] (CL) -- (FIN);
+\draw[arr] (RS) -- (CAP);
+\draw[arr] (RS) -- (SOV);
+
+% Feedback to DC: routed OVER the top of the diagram through the clean
+% vertical channel between Cloud outage (x in [0.6,2.6]) and Reinsurer
+% (x in [3.5,5.5]). Crosses no boxes, and frees the bottom strip for the
+% explanatory label.
+\draw[arr,dashed,red]
+   (CAP.north) -- ++(0,3.85)            % up at x=3, between CL and RS
+   -- ++(-3,0)                          % left across the top at y=5
+   -- (DC.north);                       % down into DC top
+\node[red,font=\scriptsize,align=center,anchor=north] at (0,-0.25)
+   {\textit{feedback:} capital cost $\uparrow$ $\Rightarrow$ $r$ $\uparrow$
+    in \eqref{eq:opercost}};
+
+\end{tikzpicture}
+\end{document}

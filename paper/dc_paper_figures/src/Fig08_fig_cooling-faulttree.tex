@@ -1,0 +1,67 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+% Natural width is ~16.2cm (the "Thermal-runaway prop." label stretches
+% the rightmost ievt box past its 2.4cm minimum), which overflows the
+% 15.9cm textwidth. \resizebox guarantees the diagram fits exactly.
+\begin{tikzpicture}[
+   every node/.style={font=\footnotesize},
+   top/.style={draw,rectangle,rounded corners=2pt,fill=red!15,minimum width=4cm,
+               minimum height=0.6cm,align=center},
+   gate/.style={draw,ellipse,fill=yellow!15,minimum width=0.9cm,minimum height=0.45cm,
+                inner sep=2pt},
+   bevt/.style={draw,circle,fill=blue!8,minimum size=0.55cm,inner sep=1pt,align=center},
+   ievt/.style={draw,rectangle,rounded corners=1pt,fill=blue!4,minimum width=2.4cm,
+                minimum height=0.5cm,align=center},
+   ln/.style={thick}
+]
+\node[top] (TC) at (0,0) {Top event $T^{\mathrm{cool}}$: cooling lost};
+\node[gate,below=0.35cm of TC] (G0) {OR};
+\draw[ln] (TC) -- (G0);
+
+\node[ievt,below=0.55cm of G0,xshift=-6.6cm] (CH) {Chiller plant fault};
+\node[ievt,below=0.55cm of G0,xshift=-2.2cm] (DI) {Distribution fault};
+\node[ievt,below=0.55cm of G0,xshift= 2.2cm] (LE) {Liquid--electrical event};
+\node[ievt,below=0.55cm of G0,xshift= 6.6cm] (TR) {Thermal-runaway prop.};
+\draw[ln] (G0) -- (CH);
+\draw[ln] (G0) -- (DI);
+\draw[ln] (G0) -- (LE);
+\draw[ln] (G0) -- (TR);
+
+% chiller plant subtree
+\node[gate,below=0.3cm of CH] (G1) {OR};
+\draw[ln] (CH) -- (G1);
+\node[bevt,below=0.45cm of G1,xshift=-1.0cm] (CHa) {comp.};
+\node[bevt,below=0.45cm of G1,xshift= 0.0cm] (CHb) {pump};
+\node[bevt,below=0.45cm of G1,xshift= 1.0cm] (CHc) {ctrl};
+\draw[ln] (G1) -- (CHa);
+\draw[ln] (G1) -- (CHb);
+\draw[ln] (G1) -- (CHc);
+
+% distribution subtree
+\node[gate,below=0.3cm of DI] (G2) {OR};
+\draw[ln] (DI) -- (G2);
+\node[bevt,below=0.45cm of G2,xshift=-0.7cm] (DIa) {pipe};
+\node[bevt,below=0.45cm of G2,xshift= 0.7cm] (DIb) {valve};
+\draw[ln] (G2) -- (DIa);
+\draw[ln] (G2) -- (DIb);
+
+% liquid-electrical (the catastrophic branch)
+\node[gate,below=0.3cm of LE,fill=red!20] (G3) {AND};
+\draw[ln] (LE) -- (G3);
+\node[bevt,below=0.45cm of G3,xshift=-0.7cm] (LEa) {leak};
+\node[bevt,below=0.45cm of G3,xshift= 0.7cm] (LEb) {energ.};
+\draw[ln] (G3) -- (LEa);
+\draw[ln] (G3) -- (LEb);
+
+% propagation
+\node[gate,below=0.3cm of TR] (G4) {OR};
+\draw[ln] (TR) -- (G4);
+\node[bevt,below=0.45cm of G4,xshift=-0.7cm] (TRa) {Li-ion};
+\node[bevt,below=0.45cm of G4,xshift= 0.7cm] (TRb) {coolant};
+\draw[ln] (G4) -- (TRa);
+\draw[ln] (G4) -- (TRb);
+
+\end{tikzpicture}%
+\end{document}

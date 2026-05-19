@@ -1,0 +1,50 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{axis}[
+   width=9cm, height=9cm,
+   xlabel={Compute supplied $q$ (\si{\giga\watt} of reliable IT)},
+   ylabel={Compute price $p$ (\$/MWh equivalent)},
+   xmin=0, xmax=100, ymin=0, ymax=250,
+   grid=major,
+   legend pos=outer north east,
+   legend cell align=left,
+   legend style={font=\scriptsize}
+]
+% Compute supply: rising with insurance premium passthrough
+\addplot[blue,thick,domain=2:100,samples=80]
+   {50 + 0.6*x + 0.005*x^2};
+\addlegendentry{$p^S(q)$ supply, baseline}
+
+% Compute supply after premium increase (insurance hard market)
+\addplot[blue,thick,dashed,domain=2:100,samples=80]
+   {70 + 0.8*x + 0.005*x^2};
+\addlegendentry{$p^S(q)$ post premium $\uparrow$}
+
+% Compute demand: constant-elasticity (epsilon ~ 0.9)
+\addplot[red,thick,domain=2:100,samples=80]
+   {1500*x^(-0.9)};
+\addlegendentry{$q^D(p)$, $\varepsilon=0.9$}
+
+% Compute demand outward shift (AI boom)
+\addplot[red,thick,dotted,domain=2:100,samples=80]
+   {2200*x^(-0.9)};
+\addlegendentry{$q^D(p)$, AI boom $A_D\uparrow$}
+
+% Baseline equilibrium ~ (32, 71)
+\filldraw (axis cs:32,74) circle (2.5pt);
+\node[font=\scriptsize] at (axis cs:36,68) {$E_0^{c}$};
+
+% Equilibrium after premium shock ~ (28, 95)
+\filldraw[blue!60!black] (axis cs:28,96) circle (2.5pt);
+\node[blue!60!black,font=\scriptsize] at (axis cs:23,103) {$E_1^{c}$};
+
+% Equilibrium after AI demand boom ~ (49, 105)
+\filldraw[purple] (axis cs:49,103) circle (2.5pt);
+\node[purple,font=\scriptsize] at (axis cs:55,108) {$E_2^{c}$};
+
+\end{axis}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,31 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=3.6cm and 4.0cm,
+  state/.style={draw,circle,minimum size=1.35cm,inner sep=1pt,
+                font=\small,fill=blue!5},
+  every edge/.style={draw,thick,->,>=Latex},
+  every node/.style={font=\footnotesize},
+  ratelbl/.style={midway,font=\footnotesize,inner sep=2pt,fill=white,
+                  fill opacity=0.85,text opacity=1}
+]
+\node[state]                                  (S0) {OK};
+\node[state,right=of S0,fill=yellow!18]       (S1) {Deg$_1$};
+\node[state,right=of S1,fill=orange!22]       (S2) {Deg$_2$};
+\node[state,right=of S2,fill=red!28]          (SF) {F};
+
+% Forward arrows bend upward (label above the upper arc); reverse arrows
+% bend left=28 in the leftward direction, which curves them downward, so
+% their label goes below the lower arc. Semi-opaque white background on
+% the labels keeps them legible even where they get close to an arc.
+\draw (S0) edge[bend left=28]  node[ratelbl,above] {$2\lambda$}                 (S1);
+\draw (S1) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S0);
+\draw (S1) edge[bend left=28]  node[ratelbl,above] {$\lambda$}                  (S2);
+\draw (S2) edge[bend left=28]  node[ratelbl,below] {$\mu$}                      (S1);
+\draw (S2) edge[bend left=28]  node[ratelbl,above] {$\lambda_{\mathrm{f}}$}     (SF);
+\draw (SF) edge[bend left=28]  node[ratelbl,below] {$\mu_{\mathrm{r}}$}         (S2);
+\end{tikzpicture}%
+\end{document}

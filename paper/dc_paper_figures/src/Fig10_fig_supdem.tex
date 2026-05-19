@@ -1,0 +1,44 @@
+\documentclass[tikz,border=10pt,12pt]{standalone}
+\input{fig_preamble.tex}
+\begin{document}
+\pagecolor{iabone}
+\begin{tikzpicture}
+\begin{axis}[
+   width=9cm, height=9cm,
+   xlabel={Cover quantity $Q$ (\$bn of single-event capacity)},
+   ylabel={Premium price $P$ (bps of TIV)},
+   xmin=0, xmax=10, ymin=0, ymax=25,
+   grid=major,
+   legend pos=outer north east,
+   legend cell align=left,
+   legend style={font=\scriptsize}
+]
+% Supply (rising)
+\addplot[blue,thick,domain=0.5:10,samples=80]
+  {3 + 1.4*x};
+\addlegendentry{$P^S(Q)$ supply}
+
+% Demand (falling)
+\addplot[red,thick,domain=0.3:10,samples=80]
+  {20 - 2.0*x + 0.05*x^2};
+\addlegendentry{$P^D(Q)$ demand}
+
+% Equilibrium
+\draw[gray,dashed] (axis cs:0,9.04) -- (axis cs:4.32,9.04);
+\draw[gray,dashed] (axis cs:4.32,0) -- (axis cs:4.32,9.04);
+\node[font=\scriptsize] at (axis cs:5.0,9.7) {$E_0=(Q^*,P^*)$};
+\filldraw (axis cs:4.32,9.04) circle (2.5pt);
+
+% Mark capacity ceiling (where supply curve effectively goes vertical for hyperscale market)
+\draw[purple,dashed,thick] (axis cs:2.5,0) -- (axis cs:2.5,25);
+\node[purple,font=\scriptsize,rotate=90] at (axis cs:2.7,17)
+   {\textit{global single-event ceiling 2025}};
+
+% Mark TIV requirement (e.g. 8 bn site)
+\draw[orange,dashed,thick] (axis cs:8,0) -- (axis cs:8,25);
+\node[orange,font=\scriptsize,rotate=90] at (axis cs:8.25,15)
+   {\textit{single hyperscale TIV}};
+
+\end{axis}
+\end{tikzpicture}
+\end{document}

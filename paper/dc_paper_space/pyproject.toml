@@ -1,0 +1,15 @@
+[project]
+name = "hyperscale-dc-risk-simulation"
+version = "1.0.0"
+description = "Streamlit Space companion to Denewade (2026) — Coupled Power–Thermal–Cyber Actuarial Framework for Hyperscale Data Centers."
+authors = [{name = "Ali Denewade", email = "ali@intelligentactuaries.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "streamlit>=1.36",
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scipy>=1.11",
+    "plotly>=5.18",
+]
