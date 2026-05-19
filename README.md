@@ -103,6 +103,59 @@ works identically.
 | §14 passthrough elasticity              | `dcrisk.econ.incidence`                    |
 | §11 compound aggregator                 | `dcrisk.monte_carlo.compound`              |
 
+## Series Paper 2 — Wearables
+
+**Title:** *Mortality of the Quantified Self — A Bayesian Credibility Framework for Wearable-Derived Life Underwriting.*
+**Status:** draft. Target post date: Monday 27 July 2026.
+**Sources:** `paper/wearables.tex` (root), `paper/wearables_body.tex` (body sections, also concatenated into the root file — kept for reference), `paper/wearables_README.md` (per-paper review notes).
+**Built PDF:** `paper/wearables.pdf` (20 pages after the polish pass) and `paper/build/wearables.pdf` after a fresh `make wearables`.
+
+The wearables paper extends the Intelligent Actuaries framework from
+property risk (Paper 1, dcrisk) into mortality risk. It applies the same
+visual house style, the same Bayesian-credibility apparatus already
+present in `src/dcrisk/`, and integrates with the regulatory layer
+(POPIA, GDPR, HIPAA, NY DFS CL 2019-1). Build it with:
+
+```bash
+make wearables          # builds only the wearables paper
+make papers             # builds both papers in this repo
+```
+
+## LaTeX build configuration
+
+The paper compiles with the **Intelligent Actuaries** colour theme: bone
+background `#FAFAF7`, deep warm near-black headings `#1B1815`, burnt-sienna
+accents `#A04A1F`, coloured callout boxes (Novel contribution / Remark /
+Worked example), and pgfplots charts in colour.
+
+**Canonical build (from project root):**
+
+```bash
+cd paper
+latexmk -pdf -interaction=nonstopmode -file-line-error -synctex=1 \
+  -shell-escape -outdir=build dc_paper.tex
+# -> paper/build/dc_paper.pdf  (42 pages, ~457 KB)
+# -> paper/build/dc_paper.synctex.gz   (for Evince SyncTeX)
+```
+
+Or just `make paper` from the project root, which runs the same `latexmk`.
+
+**VS Code build (LaTeX Workshop):** `.vscode/settings.json` configures the
+same `latexmk` invocation. Build is auto-triggered on save.
+
+**Viewer note.** VS Code's built-in PDF tab (PDF.js) renders this paper's
+near-white bone background and tcolorbox shading slightly differently from
+Poppler-based viewers — the colours can look washed out in the in-tab
+preview. The byte-for-byte identical PDF renders correctly in Evince, and
+`.vscode/settings.json` is configured to open `paper/build/dc_paper.pdf` in
+**external Evince** after each build. Forward-search (Ctrl+Alt+J from
+LaTeX Workshop) and inverse-search (Ctrl+click in Evince) both work via
+the `.synctex.gz` file produced by `-synctex=1`.
+
+**If VS Code is unavailable**, the CLI build is byte-equivalent to what
+LaTeX Workshop produces — diagnostic in `setup.log` confirms a normalised
+SHA-256 match of `db266edd73f805bee867c5c2…` across the two builds.
+
 ## License
 
 [MIT](./LICENSE) — © 2026 Ali Denewade.

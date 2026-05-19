@@ -7,6 +7,8 @@ CONDA_ENV ?= dcrisk-gpu
 PAPER_DIR := paper
 PAPER_SRC := $(PAPER_DIR)/dc_paper.tex
 PAPER_OUT := $(PAPER_DIR)/build/dc_paper.pdf
+WEAR_SRC  := $(PAPER_DIR)/wearables.tex
+WEAR_OUT  := $(PAPER_DIR)/build/wearables.pdf
 
 NB_DIR        := notebooks
 NOTEBOOKS     := $(wildcard $(NB_DIR)/*.ipynb)
@@ -16,12 +18,14 @@ NOTEBOOKS_GPU := $(NB_DIR)/04b_sde_simulation_gpu.ipynb $(NB_DIR)/08_oep_full_si
 TAILSCALE_IP := $(shell tailscale ip --4 2>/dev/null | head -n1)
 STREAMLIT_PORT ?= 8501
 
-.PHONY: help paper paper-clean sim sim-gpu app app-tunnel test test-gpu lint format clean bench check-env
+.PHONY: help paper wearables papers paper-clean sim sim-gpu app app-tunnel test test-gpu lint format clean bench check-env
 
 help:
 	@echo "dcrisk — make targets (env: $(CONDA_ENV)):"
 	@echo "  paper        Build paper/build/dc_paper.pdf via latexmk"
-	@echo "  paper-clean  Remove latex aux files from paper/build (keep PDF)"
+	@echo "  wearables    Build paper/build/wearables.pdf (Series Paper 2) via latexmk"
+	@echo "  papers       Build both papers"
+	@echo "  paper-clean  Remove latex aux files from paper/build (keep PDFs)"
 	@echo "  sim          Execute all notebooks in-place via papermill"
 	@echo "  sim-gpu      Execute only the GPU notebooks (04b, 08)"
 	@echo "  app          Launch Streamlit bound to the Tailscale IP, port $(STREAMLIT_PORT)"
@@ -33,13 +37,23 @@ help:
 	@echo "  format       black + isort"
 	@echo "  clean        Remove __pycache__, .pytest_cache, latex aux, paper/build/"
 
-# ---- paper ----------------------------------------------------------------
+# ---- papers ---------------------------------------------------------------
 
 paper: $(PAPER_OUT)
 
 $(PAPER_OUT): $(wildcard $(PAPER_DIR)/*.tex)
 	@mkdir -p $(PAPER_DIR)/build
-	cd $(PAPER_DIR) && latexmk -pdf -interaction=nonstopmode -shell-escape -outdir=build dc_paper.tex
+	cd $(PAPER_DIR) && latexmk -pdf -interaction=nonstopmode -file-line-error \
+	   -synctex=1 -shell-escape -outdir=build dc_paper.tex
+
+wearables: $(WEAR_OUT)
+
+$(WEAR_OUT): $(WEAR_SRC) $(PAPER_DIR)/wearables_body.tex
+	@mkdir -p $(PAPER_DIR)/build
+	cd $(PAPER_DIR) && latexmk -pdf -interaction=nonstopmode -file-line-error \
+	   -synctex=1 -shell-escape -outdir=build wearables.tex
+
+papers: paper wearables
 
 paper-clean:
 	cd $(PAPER_DIR) && latexmk -c -outdir=build || true
