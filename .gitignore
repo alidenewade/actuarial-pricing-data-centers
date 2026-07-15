@@ -47,8 +47,12 @@ profile_default/
 paper/build/*
 !paper/build/.gitkeep
 
-# --- Editor / OS ---
-.vscode/*.log
+# --- Editor / agent / OS ---
+# Local to a machine, not to the project: these carry absolute interpreter
+# paths, a tailnet address and a session lock, none of which mean anything in
+# someone else's clone.
+.vscode/
+.claude/
 .DS_Store
 Thumbs.db
 *.swp
